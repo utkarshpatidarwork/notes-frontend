@@ -124,6 +124,38 @@ function NoteModal({
 
           </div>
 
+          {
+            selectedNote.attachments?.length > 0 && (
+
+              <div className="mb-6">
+
+                {
+                  selectedNote.attachments.map(
+                    (file, index) => (
+
+                      <a
+                        key={index}
+                        href={file.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="
+                          block
+                          text-blue-600
+                          underline
+                          mb-2
+                        "
+                      >
+                        📎 {file.name}
+                      </a>
+
+                    )
+                  )
+                }
+
+              </div>
+            )
+          }
+
           <div
             className="
               text-gray-700

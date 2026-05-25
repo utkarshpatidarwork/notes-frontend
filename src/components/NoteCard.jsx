@@ -84,6 +84,38 @@ function NoteCard({
           {note.category}
         </div>
 
+        {
+          note.attachments?.length > 0 && (
+
+            <div className="mb-4">
+
+              {
+                note.attachments.map(
+                  (file, index) => (
+
+                    <a
+                      key={index}
+                      href={file.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="
+                        block
+                        text-blue-600
+                        underline
+                        mb-2
+                      "
+                    >
+                      📎 {file.name}
+                    </a>
+
+                  )
+                )
+              }
+
+            </div>
+          )
+        }
+
         <p
           className="
             text-gray-600
@@ -93,9 +125,9 @@ function NoteCard({
         >
           {
             note.content.length > 120
-                ? `${note.content.slice(0, 120)}...`
-                : note.content
-        }
+              ? `${note.content.slice(0, 120)}...`
+              : note.content
+          }
         </p>
 
         <div

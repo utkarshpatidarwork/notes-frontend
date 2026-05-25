@@ -37,8 +37,8 @@ function DashboardPage() {
   const [category, setCategory] =
     useState("General");
 
-  const [image, setImage] =
-    useState("");
+  const [attachments, setAttachments] =
+    useState([]);
 
   const [preview, setPreview] =
     useState("");
@@ -206,45 +206,67 @@ function DashboardPage() {
 
   }, [darkMode]);
 
-  const uploadImage = async (file) => {
+  const uploadFile =
+    async (file) => {
 
-    try {
+      try {
 
-      setUploading(true);
+        setUploading(true);
 
-      setPreview(
-        URL.createObjectURL(file)
-      );
+        const formData =
+          new FormData();
 
-      const formData = new FormData();
+        formData.append(
+          "file",
+          file
+        );
 
-      formData.append("file", file);
+        const { data } =
+          await axios.post(
+            `${API}/api/upload`,
+            formData,
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${token}`,
 
-      const { data } = await axios.post(
-        `${API}/api/upload`,
-        formData,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
+                "Content-Type":
+                  "multipart/form-data"
+              }
+            }
+          );
 
-            "Content-Type":
-              "multipart/form-data"
-          }
-        }
-      );
+        setAttachments(
+          (prev) => [
+            ...prev,
+            {
+              url:
+                data.imageUrl,
 
-      setImage(data.imageUrl);
+              type:
+                file.type,
 
-      setUploading(false);
+              name:
+                file.name
+            }
+          ]
+        );
 
-    } catch (error) {
+        setUploading(false);
 
-      setUploading(false);
+        toast.success(
+          "File Uploaded"
+        );
 
-      toast.error("Something went wrong");
-    }
-  };
+      } catch (error) {
+
+        setUploading(false);
+
+        toast.error(
+          "Upload failed"
+        );
+      }
+    };
 
   const createNote = async (e) => {
 
@@ -259,7 +281,7 @@ function DashboardPage() {
         {
           title,
           content,
-          image,
+          attachments,
           category,
 
           workspace:
@@ -809,9 +831,10 @@ function DashboardPage() {
 
               <input
                 type="file"
+                multiple
                 className="hidden"
                 onChange={(e) =>
-                  uploadImage(
+                  uploadFile(
                     e.target.files[0]
                   )
                 }
