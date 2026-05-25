@@ -65,8 +65,16 @@ function DashboardPage() {
         === "dark"
     );
 
-  const [selectedNote,
-    setSelectedNote] =
+  const [selectedNote, setSelectedNote] =
+      useState(null);
+
+  const [workspaces, setWorkspaces] =
+      useState([]);
+
+  const [workspaceName, setWorkspaceName] =
+      useState("");
+
+  const [selectedWorkspace, setSelectedWorkspace] =
       useState(null);
 
   const navigate = useNavigate();
@@ -85,6 +93,41 @@ function DashboardPage() {
 
     navigate("/");
   };
+
+  const fetchWorkspaces =
+    async () => {
+
+      try {
+
+        const { data } =
+          await axios.get(
+            `${API}/api/workspaces`,
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${token}`
+              }
+            }
+          );
+
+        setWorkspaces(data);
+
+        if (
+          data.length > 0 &&
+          !selectedWorkspace
+        ) {
+          setSelectedWorkspace(
+            data[0]
+          );
+        }
+
+      } catch (error) {
+
+        toast.error(
+          "Workspace fetch failed"
+        );
+      }
+    };
 
   const fetchNotes = async () => {
 
@@ -109,6 +152,8 @@ function DashboardPage() {
   };
 
   useEffect(() => {
+
+    fetchWorkspaces();
 
     fetchNotes();
 
@@ -394,6 +439,133 @@ function DashboardPage() {
         "
       >
 
+        <div
+          className="
+            bg-white
+            dark:bg-slate-800
+            p-6
+            rounded-2xl
+            shadow-md
+            mb-6
+          "
+        >
+
+          <h2
+            className="
+              text-2xl
+              font-bold
+              mb-4
+              dark:text-white
+            "
+          >
+            Workspaces
+          </h2>
+
+          <div className="flex gap-3 mb-4">
+
+            <input
+              type="text"
+              placeholder="Workspace Name"
+              value={workspaceName}
+              onChange={(e) =>
+                setWorkspaceName(
+                  e.target.value
+                )
+              }
+              className="
+                flex-1
+                border
+                rounded-lg
+                px-4
+                py-3
+                dark:bg-slate-700
+                dark:text-white
+              "
+            />
+
+            <button
+              onClick={async () => {
+
+                try {
+
+                  await axios.post(
+                    `${API}/api/workspaces`,
+                    {
+                      name:
+                        workspaceName
+                    },
+                    {
+                      headers: {
+                        Authorization:
+                          `Bearer ${token}`
+                      }
+                    }
+                  );
+
+                  setWorkspaceName("");
+
+                  fetchWorkspaces();
+
+                  toast.success(
+                    "Workspace Created"
+                  );
+
+                } catch (error) {
+
+                  toast.error(
+                    "Workspace creation failed"
+                  );
+                }
+              }}
+              className="
+                bg-blue-600
+                hover:bg-blue-700
+                text-white
+                px-6
+                rounded-lg
+              "
+            >
+              Create
+            </button>
+
+          </div>
+
+          <div className="flex gap-3 flex-wrap">
+
+            {
+              workspaces.map(
+                (workspace) => (
+
+                  <button
+                    key={workspace._id}
+                    onClick={() =>
+                      setSelectedWorkspace(
+                        workspace
+                      )
+                    }
+                    className={`
+                      px-4
+                      py-2
+                      rounded-full
+                      ${
+                        selectedWorkspace?._id
+                        === workspace._id
+                          ? "bg-blue-600 text-white"
+                          : "bg-slate-200"
+                      }
+                    `}
+                  >
+                    {workspace.name}
+                  </button>
+
+                )
+              )
+            }
+
+          </div>
+
+        </div>
+        
         <div
           className="
             bg-white
