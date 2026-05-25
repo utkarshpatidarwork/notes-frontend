@@ -55,9 +55,8 @@ function DashboardPage() {
   const [search, setSearch] =
     useState("");
 
-  const [selectedCategory,
-    setSelectedCategory] =
-      useState("All");
+  const [selectedCategory, setSelectedCategory] =
+    useState("All");
 
   const [darkMode, setDarkMode] =
     useState(
@@ -66,16 +65,19 @@ function DashboardPage() {
     );
 
   const [selectedNote, setSelectedNote] =
-      useState(null);
+    useState(null);
 
   const [workspaces, setWorkspaces] =
-      useState([]);
+    useState([]);
 
   const [workspaceName, setWorkspaceName] =
-      useState("");
+    useState("");
 
   const [selectedWorkspace, setSelectedWorkspace] =
-      useState(null);
+    useState(null);
+
+  const [inviteCode, setInviteCode] =
+    useState("");
 
   const navigate = useNavigate();
 
@@ -541,6 +543,70 @@ function DashboardPage() {
               Create
             </button>
 
+            <input
+              type="text"
+              placeholder="Invite Code"
+              value={inviteCode}
+              onChange={(e) =>
+                setInviteCode(
+                  e.target.value
+                )
+              }
+              className="
+                flex-1
+                border
+                rounded-lg
+                px-4
+                py-3
+                dark:bg-slate-700
+                dark:text-white
+              "
+            />
+
+            <button
+              onClick={async () => {
+
+                try {
+
+                  await axios.post(
+                    `${API}/api/workspaces/join`,
+                    {
+                      inviteCode
+                    },
+                    {
+                      headers: {
+                        Authorization:
+                          `Bearer ${token}`
+                      }
+                    }
+                  );
+
+                  setInviteCode("");
+
+                  fetchWorkspaces();
+
+                  toast.success(
+                    "Joined Workspace"
+                  );
+
+                } catch (error) {
+
+                  toast.error(
+                    "Join failed"
+                  );
+                }
+              }}
+              className="
+                bg-green-600
+                hover:bg-green-700
+                text-white
+                px-6
+                rounded-lg
+              "
+            >
+              Join
+            </button>
+
           </div>
 
           <div className="flex gap-3 flex-wrap">
@@ -568,7 +634,22 @@ function DashboardPage() {
                       }
                     `}
                   >
-                    {workspace.name}
+                    <div>
+
+                      <div>
+                        {workspace.name}
+                      </div>
+
+                      <div
+                        className="
+                          text-xs
+                          opacity-70
+                        "
+                      >
+                        {workspace.inviteCode}
+                      </div>
+
+                    </div>
                   </button>
 
                 )
