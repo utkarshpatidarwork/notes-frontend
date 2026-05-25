@@ -241,7 +241,7 @@ function DashboardPage() {
             ...prev,
             {
               url:
-                data.imageUrl,
+                data.fileUrl,
 
               type:
                 file.type,
@@ -297,7 +297,7 @@ function DashboardPage() {
 
       setTitle("");
       setContent("");
-      setImage("");
+      setAttachments("");
       setPreview("");
       setCategory("General");
 
@@ -326,7 +326,7 @@ function DashboardPage() {
         {
           title,
           content,
-          image,
+          attachments,
           category,
 
           workspace:
@@ -342,7 +342,7 @@ function DashboardPage() {
 
       setTitle("");
       setContent("");
-      setImage("");
+      setAttachments([]);
       setPreview("");
       setCategory("General");
       setEditingId(null);
@@ -420,7 +420,7 @@ function DashboardPage() {
 
     setContent(note.content);
 
-    setImage(note.image);
+    setAttachments(note.attachments || []);
 
     setCategory(note.category);
 

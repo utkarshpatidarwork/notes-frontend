@@ -42,9 +42,9 @@ function NoteModal({
       >
 
         {
-          selectedNote.image && (
+          selectedNote.attachments && (
             <img
-              src={selectedNote.image}
+              src={selectedNote.attachments}
               alt="note"
               className="
                 w-full
