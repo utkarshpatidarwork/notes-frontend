@@ -833,17 +833,21 @@ function DashboardPage() {
                 type="file"
                 multiple
                 className="hidden"
-                onChange={(e) =>
-                  uploadFile(
-                    e.target.files[0]
-                  )
-                }
+                onChange={(e) => {
+
+                  Array.from(
+                    e.target.files
+                  ).forEach((file) => {
+
+                    uploadFile(file);
+                  });
+                }}
               />
 
               {
                 uploading
                   ? "Uploading..."
-                  : "Choose Image"
+                  : "Choose File"
               }
 
             </label>

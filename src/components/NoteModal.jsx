@@ -42,9 +42,9 @@ function NoteModal({
       >
 
         {
-          selectedNote.attachments && (
+          selectedNote.attachments?.[0]?.type?.startsWith("image") && (
             <img
-              src={selectedNote.attachments}
+              src={selectedNote.attachments[0].url}
               alt="note"
               className="
                 w-full

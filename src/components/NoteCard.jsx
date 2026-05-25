@@ -29,9 +29,9 @@ function NoteCard({
     >
 
       {
-        note.attachments && (
+        note.attachments?.[0]?.type?.startsWith("image") && (
           <img
-            src={note.attachments}
+            src={note.attachments[0].url}
             alt="note"
             className="
               w-full
