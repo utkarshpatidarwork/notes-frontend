@@ -134,7 +134,7 @@ function DashboardPage() {
     try {
 
       const { data } = await axios.get(
-        `${API}/api/notes`,
+        `${API}/api/notes?workspace=${selectedWorkspace?._id}`,
         {
           headers: {
             Authorization:
@@ -155,7 +155,14 @@ function DashboardPage() {
 
     fetchWorkspaces();
 
-    fetchNotes();
+  }, []);
+
+  useEffect(() => {
+
+    if (selectedWorkspace) {
+
+      fetchNotes();
+    }
 
     socket.on(
       "notesUpdated",
@@ -170,7 +177,7 @@ function DashboardPage() {
       socket.off("notesUpdated");
     };
 
-  }, []);
+  }, [selectedWorkspace]);
 
   useEffect(() => {
 
@@ -251,7 +258,10 @@ function DashboardPage() {
           title,
           content,
           image,
-          category
+          category,
+
+          workspace:
+            selectedWorkspace?._id
         },
         {
           headers: {
@@ -293,7 +303,10 @@ function DashboardPage() {
           title,
           content,
           image,
-          category
+          category,
+
+          workspace:
+            selectedWorkspace?._id
         },
         {
           headers: {
