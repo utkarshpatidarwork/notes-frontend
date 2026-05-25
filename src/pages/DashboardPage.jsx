@@ -297,7 +297,7 @@ function DashboardPage() {
 
       setTitle("");
       setContent("");
-      setAttachments("");
+      setAttachments([]);
       setPreview("");
       setCategory("General");
 
