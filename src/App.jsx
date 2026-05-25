@@ -9,6 +9,8 @@ import DashboardPage from "./pages/DashboardPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
+import RegisterPage from "./pages/RegisterPage";
+
 function App() {
 
   return (
@@ -19,6 +21,11 @@ function App() {
       <Route
         path="/"
         element={<LoginPage />}
+      />
+
+      <Route
+        path="/register"
+        element={<RegisterPage />}
       />
 
       {/* Protected Dashboard */}
