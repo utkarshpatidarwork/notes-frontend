@@ -133,20 +133,40 @@ function NoteModal({
                   selectedNote.attachments.map(
                     (file, index) => (
 
-                      <a
-                        key={index}
-                        href={file.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="
-                          block
-                          text-blue-600
-                          underline
-                          mb-2
-                        "
-                      >
-                        📎 {file.name}
-                      </a>
+                      <div key={index}>
+
+                        {
+                          file.type.includes("pdf") && (
+
+                            <iframe
+                              src={file.url}
+                              title={file.name}
+                              className="
+                                w-full
+                                h-[700px]
+                                rounded-xl
+                                mb-4
+                              "
+                            />
+
+                          )
+                        }
+
+                        <a
+                          href={file.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="
+                            block
+                            text-blue-600
+                            underline
+                            mb-4
+                          "
+                        >
+                          📎 {file.name}
+                        </a>
+
+                      </div>
 
                     )
                   )
