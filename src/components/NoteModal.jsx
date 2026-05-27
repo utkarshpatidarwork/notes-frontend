@@ -171,18 +171,22 @@ function NoteModal({
                           "
                         >
 
-                          <a
-                            href={file.url}
-                            target="_blank"
-                            rel="noreferrer"
+                          <button
+                            onClick={() =>
+                              window.open(
+                                file.url,
+                                "_blank"
+                              )
+                            }
                             className="
                               text-blue-600
                               underline
                               break-all
+                              text-left
                             "
                           >
                             📎 {file.name}
-                          </a>
+                          </button>
 
                           <a
                             href={file.url}
