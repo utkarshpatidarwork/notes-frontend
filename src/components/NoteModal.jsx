@@ -168,7 +168,7 @@ function NoteModal({
                           ) && (
 
                             <iframe
-                              src={`https://docs.google.com/gview?url=${encodeURIComponent(file.url)}&embedded=true`}
+                              src={file.url}
                               title={file.name}
                               className="
                                 w-full
