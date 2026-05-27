@@ -162,45 +162,6 @@ function NoteModal({
                           )
                         }
 
-                        {
-                          file.type.includes(
-                            "pdf"
-                          ) && (
-
-                            <iframe
-                              src={file.url}
-                              title={file.name}
-                              className="
-                                w-full
-                                h-[500px]
-                                rounded-xl
-                                mb-4
-                              "
-                            />
-
-                          )
-                        }
-
-                        {
-                          file.type.includes(
-                            "word"
-                          ) && (
-
-                            <div
-                              className="
-                                p-4
-                                bg-slate-100
-                                dark:bg-slate-800
-                                rounded-xl
-                                mb-4
-                              "
-                            >
-                              📄 Word Document Preview
-                            </div>
-
-                          )
-                        }
-
                         <div
                           className="
                             flex
