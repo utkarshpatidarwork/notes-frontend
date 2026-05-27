@@ -162,6 +162,44 @@ function NoteModal({
                           )
                         }
 
+                        {
+                          file.type.includes(
+                            "pdf"
+                          ) && (
+
+                            <iframe
+                              src={file.url}
+                              title={file.name}
+                              className="
+                                w-full
+                                h-[500px]
+                                rounded-xl
+                                mb-4
+                              "
+                            />
+
+                          )
+                        }
+
+                        {
+                          file.type.includes(
+                            "word"
+                          ) && (
+
+                            <iframe
+                              src={`https://docs.google.com/gview?url=${encodeURIComponent(file.url)}&embedded=true`}
+                              title={file.name}
+                              className="
+                                w-full
+                                h-[500px]
+                                rounded-xl
+                                mb-4
+                              "
+                            />
+
+                          )
+                        }
+
                         <div
                           className="
                             flex
