@@ -133,20 +133,115 @@ function NoteModal({
                   selectedNote.attachments.map(
                     (file, index) => (
 
-                      <a
+                      <div
                         key={index}
-                        href={file.url}
-                        target="_blank"
-                        rel="noreferrer"
                         className="
-                          block
-                          text-blue-600
-                          underline
-                          mb-2
+                          mb-6
+                          border
+                          rounded-xl
+                          p-4
+                          dark:border-slate-700
                         "
                       >
-                        📎 {file.name}
-                      </a>
+
+                        {
+                          file.type.startsWith(
+                            "image"
+                          ) && (
+
+                            <img
+                              src={file.url}
+                              alt={file.name}
+                              className="
+                                w-full
+                                rounded-xl
+                                mb-4
+                              "
+                            />
+
+                          )
+                        }
+
+                        {
+                          file.type.includes(
+                            "pdf"
+                          ) && (
+
+                            <iframe
+                              src={file.url}
+                              title={file.name}
+                              className="
+                                w-full
+                                h-[500px]
+                                rounded-xl
+                                mb-4
+                              "
+                            />
+
+                          )
+                        }
+
+                        {
+                          file.type.includes(
+                            "word"
+                          ) && (
+
+                            <div
+                              className="
+                                p-4
+                                bg-slate-100
+                                dark:bg-slate-800
+                                rounded-xl
+                                mb-4
+                              "
+                            >
+                              📄 Word Document Preview
+                            </div>
+
+                          )
+                        }
+
+                        <div
+                          className="
+                            flex
+                            items-center
+                            justify-between
+                            gap-4
+                          "
+                        >
+
+                          <a
+                            href={file.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="
+                              text-blue-600
+                              underline
+                              break-all
+                            "
+                          >
+                            📎 {file.name}
+                          </a>
+
+                          <a
+                            href={file.url}
+                            download
+                            className="
+                              bg-blue-600
+                              hover:bg-blue-700
+                              text-white
+                              px-4
+                              py-2
+                              rounded-lg
+                              text-sm
+                            "
+                          >
+                            Download
+                          </a>
+
+                        </div>
+
+                      </div>
 
                     )
                   )
