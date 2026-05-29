@@ -18,7 +18,36 @@ ReactDOM.createRoot(
     
     <BrowserRouter>
     
-      <Toaster />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+
+          style: {
+            background: "#1e293b",
+            color: "#fff",
+            borderRadius: "14px",
+            padding: "14px 18px",
+            fontSize: "15px",
+            boxShadow:
+              "0 10px 25px rgba(0,0,0,0.25)"
+          },
+
+          success: {
+            iconTheme: {
+              primary: "#22c55e",
+              secondary: "#fff"
+            }
+          },
+
+          error: {
+            iconTheme: {
+              primary: "#ef4444",
+              secondary: "#fff"
+            }
+          }
+        }}
+      />
 
       <App />
     

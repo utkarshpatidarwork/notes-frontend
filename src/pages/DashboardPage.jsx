@@ -40,9 +40,6 @@ function DashboardPage() {
   const [attachments, setAttachments] =
     useState([]);
 
-  const [preview, setPreview] =
-    useState("");
-
   const [editingId, setEditingId] =
     useState(null);
 
@@ -84,7 +81,9 @@ function DashboardPage() {
   const API =
     "https://notes-api-m5rs.onrender.com";
 
-  const socket = io(API);
+  const [socket] = useState(
+    () => io(API)
+  );
 
   const token =
     localStorage.getItem("token");
@@ -298,7 +297,6 @@ function DashboardPage() {
       setTitle("");
       setContent("");
       setAttachments([]);
-      setPreview("");
       setCategory("General");
 
       fetchNotes();
@@ -343,7 +341,6 @@ function DashboardPage() {
       setTitle("");
       setContent("");
       setAttachments([]);
-      setPreview("");
       setCategory("General");
       setEditingId(null);
 
@@ -478,7 +475,7 @@ function DashboardPage() {
         className="
           max-w-7xl
           mx-auto
-          p-6
+          p-4 md:p-6
         "
       >
 
@@ -504,7 +501,7 @@ function DashboardPage() {
             Workspaces
           </h2>
 
-          <div className="flex gap-3 mb-4">
+          <div className="flex flex-col md:flex-row gap-3 mb-4">
 
             <input
               type="text"
@@ -563,6 +560,10 @@ function DashboardPage() {
               className="
                 bg-blue-600
                 hover:bg-blue-700
+                active:scale-95
+                focus:ring-2
+                focus:ring-blue-500
+                focus:outline-none
                 text-white
                 px-6
                 rounded-lg
@@ -627,6 +628,10 @@ function DashboardPage() {
               className="
                 bg-green-600
                 hover:bg-green-700
+                active:scale-95
+                focus:ring-2
+                focus:ring-blue-500
+                focus:outline-none
                 text-white
                 px-6
                 rounded-lg
@@ -654,6 +659,8 @@ function DashboardPage() {
                       px-4
                       py-2
                       rounded-full
+                      active:scale-95
+                      transition
                       ${
                         selectedWorkspace?._id
                         === workspace._id
@@ -819,19 +826,25 @@ function DashboardPage() {
             <label
               className="
                 flex
+                flex-col
                 items-center
                 justify-center
                 border-2
                 border-dashed
-                border-gray-300
-                rounded-xl
-                p-6
+                border-slate-300
+                dark:border-slate-600
+                rounded-2xl
+                p-10
                 cursor-pointer
                 hover:border-blue-500
                 hover:bg-blue-50
+                dark:hover:bg-slate-700
                 transition
+                duration-300
                 text-gray-600
+                dark:text-gray-300
                 font-medium
+                animate-fadeIn
               "
             >
 
@@ -850,27 +863,69 @@ function DashboardPage() {
                 }}
               />
 
-              {
-                uploading
-                  ? "Uploading..."
-                  : "Choose File"
-              }
+              <div className="text-5xl mb-3">
+                📁
+              </div>
+
+              <div className="text-lg font-semibold">
+                {
+                  uploading
+                    ? "Uploading..."
+                    : "Choose Files"
+                }
+              </div>
+
+              <div
+                className="
+                  text-sm
+                  text-gray-500
+                  mt-2
+                  text-center
+                "
+              >
+                Drag & drop files or click
+                to browse
+              </div>
 
             </label>
 
             {
-              preview && (
+              attachments.length > 0 && (
 
-                <img
-                  src={preview}
-                  alt="preview"
+                <div
                   className="
-                    w-full
-                    h-60
-                    object-cover
-                    rounded-xl
+                    mt-4
+                    flex
+                    flex-wrap
+                    gap-3
                   "
-                />
+                >
+
+                  {
+                    attachments.map(
+                      (file, index) => (
+
+                        <div
+                          key={index}
+                          className="
+                            bg-slate-100
+                            dark:bg-slate-700
+                            px-4
+                            py-2
+                            rounded-xl
+                            text-sm
+                            dark:text-white
+                            shadow-sm
+                          "
+                        >
+                          📎 {file.name}
+                        </div>
+
+                      )
+                    )
+                  }
+
+                </div>
 
               )
             }
@@ -881,6 +936,10 @@ function DashboardPage() {
               className="
                 bg-blue-600
                 hover:bg-blue-700
+                active:scale-95
+                focus:ring-2
+                focus:ring-blue-500
+                focus:outline-none
                 text-white
                 py-3
                 rounded-lg
@@ -924,31 +983,41 @@ function DashboardPage() {
               className="
                 bg-white
                 dark:bg-slate-800
-                rounded-2xl
-                shadow-md
-                p-10
+                rounded-3xl
+                shadow-lg
+                border
+                border-slate-200
+                dark:border-slate-700
+                p-16
                 text-center
+                animate-fadeIn
               "
             >
 
+              <div className="text-6xl mb-6">
+                📝
+              </div>
+
               <h2
                 className="
-                  text-3xl
+                  text-4xl
                   font-bold
-                  mb-3
+                  mb-4
                   dark:text-white
                 "
               >
-                📝 No Notes Yet
+                No Notes Yet
               </h2>
 
               <p
                 className="
-                  text-gray-600
-                  dark:text-gray-300
+                  text-gray-500
+                  dark:text-gray-400
+                  text-lg
                 "
               >
-                Create your first note 🚀
+                Create your first note and
+                start organizing your ideas 🚀
               </p>
 
             </div>

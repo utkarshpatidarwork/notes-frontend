@@ -38,6 +38,7 @@ function NoteModal({
           w-full
           max-h-[90vh]
           overflow-y-auto
+          animate-fadeIn
         "
       >
 
@@ -237,6 +238,10 @@ function NoteModal({
                             className="
                               bg-blue-600
                               hover:bg-blue-700
+                              active:scale-95
+                              focus:ring-2
+                              focus:ring-blue-500
+                              focus:outline-none
                               text-white
                               px-4
                               py-2

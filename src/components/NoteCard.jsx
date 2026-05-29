@@ -21,8 +21,8 @@ function NoteCard({
         shadow-md
         overflow-hidden
         cursor-pointer
-        hover:scale-[1.02]
-        hover:shadow-xl
+        hover:-translate-y-1
+        hover:shadow-2xl
         duration-300
         transition
       "
@@ -148,6 +148,7 @@ function NoteCard({
             className="
               bg-yellow-400
               hover:bg-yellow-500
+              active:scale-95
               text-black
               px-3
               py-1
@@ -172,6 +173,7 @@ function NoteCard({
             className="
               bg-blue-500
               hover:bg-blue-600
+              active:scale-95
               text-white
               px-4
               py-2
@@ -191,6 +193,7 @@ function NoteCard({
             className="
               bg-red-500
               hover:bg-red-600
+              active:scale-95
               text-white
               px-4
               py-2
