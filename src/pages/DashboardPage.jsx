@@ -426,10 +426,11 @@ function DashboardPage() {
 
     setEditingId(note._id);
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+    document
+      .querySelector("form")
+      ?.scrollIntoView({
+        behavior: "smooth"
+      });
   };
 
   const filteredNotes = notes.filter(
