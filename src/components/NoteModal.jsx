@@ -188,9 +188,31 @@ function NoteModal({
                             📎 {file.name}
                           </button>
 
-                          <a
-                            href={file.url}
-                            download
+                          <button
+                            onClick={async () => {
+
+                              const response =
+                                await fetch(file.url);
+
+                              const blob =
+                                await response.blob();
+
+                              const url =
+                                window.URL.createObjectURL(blob);
+
+                              const link =
+                                document.createElement("a");
+
+                              link.href = url;
+
+                              link.download =
+                                file.name;
+
+                              link.click();
+
+                              window.URL
+                                .revokeObjectURL(url);
+                            }}
                             className="
                               bg-blue-600
                               hover:bg-blue-700
@@ -202,7 +224,7 @@ function NoteModal({
                             "
                           >
                             Download
-                          </a>
+                          </button>
 
                         </div>
 
