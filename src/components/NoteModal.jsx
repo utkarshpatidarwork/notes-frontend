@@ -167,6 +167,7 @@ function NoteModal({
                             flex
                             items-center
                             justify-between
+                            flex_wrap
                             gap-4
                           "
                         >
@@ -183,6 +184,7 @@ function NoteModal({
                               underline
                               break-all
                               text-left
+                              max-w-[70%]
                             "
                           >
                             📎 {file.name}
