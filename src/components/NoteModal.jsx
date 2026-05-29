@@ -42,9 +42,15 @@ function NoteModal({
       >
 
         {
-          selectedNote.attachments?.[0]?.type?.startsWith("image") && (
+          selectedNote.attachments?.[0]
+            ?.type?.startsWith("image") && (
+
             <img
-              src={selectedNote.attachments[0].url}
+              src={
+                selectedNote
+                  .attachments[0]
+                  .url
+              }
               alt="note"
               className="
                 w-full
@@ -53,6 +59,7 @@ function NoteModal({
                 bg-black
               "
             />
+
           )
         }
 
@@ -125,7 +132,8 @@ function NoteModal({
           </div>
 
           {
-            selectedNote.attachments?.length > 0 && (
+            selectedNote.attachments
+              ?.length > 0 && (
 
               <div className="mb-6">
 
@@ -167,7 +175,7 @@ function NoteModal({
                             flex
                             items-center
                             justify-between
-                            flex_wrap
+                            flex-wrap
                             gap-4
                           "
                         >
@@ -185,6 +193,7 @@ function NoteModal({
                               break-all
                               text-left
                               max-w-[70%]
+                              shrink
                             "
                           >
                             📎 {file.name}
@@ -194,16 +203,24 @@ function NoteModal({
                             onClick={async () => {
 
                               const response =
-                                await fetch(file.url);
+                                await fetch(
+                                  file.url
+                                );
 
                               const blob =
                                 await response.blob();
 
                               const url =
-                                window.URL.createObjectURL(blob);
+                                window.URL
+                                  .createObjectURL(
+                                    blob
+                                  );
 
                               const link =
-                                document.createElement("a");
+                                document
+                                  .createElement(
+                                    "a"
+                                  );
 
                               link.href = url;
 
@@ -213,7 +230,9 @@ function NoteModal({
                               link.click();
 
                               window.URL
-                                .revokeObjectURL(url);
+                                .revokeObjectURL(
+                                  url
+                                );
                             }}
                             className="
                               bg-blue-600
@@ -223,6 +242,7 @@ function NoteModal({
                               py-2
                               rounded-lg
                               text-sm
+                              shrink-0
                             "
                           >
                             Download
