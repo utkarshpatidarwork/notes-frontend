@@ -425,6 +425,11 @@ function DashboardPage() {
     setCategory(note.category);
 
     setEditingId(note._id);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   };
 
   const filteredNotes = notes.filter(
