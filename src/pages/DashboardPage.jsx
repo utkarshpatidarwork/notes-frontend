@@ -9,8 +9,6 @@ import toast from "react-hot-toast";
 
 import { io } from "socket.io-client";
 
-import ReactQuill from "react-quill";
-
 import {
   useNavigate
 } from "react-router-dom";
@@ -744,15 +742,26 @@ function DashboardPage() {
               "
             />
 
-            <ReactQuill
-              theme="snow"
+            <textarea
+              placeholder="Content"
               value={content}
-              onChange={setContent}
+              onChange={(e) =>
+                setContent(e.target.value)
+              }
+              rows={10}
               className="
-                bg-white
-                dark:text-black
-                rounded-xl
-                mb-4
+                border
+                rounded-lg
+                px-4
+                py-3
+                outline-none
+                focus:ring-2
+                focus:ring-blue-500
+                dark:bg-slate-700
+                dark:text-white
+                dark:border-slate-600
+                resize-y
+                min-h-[250px]
               "
             />
 
