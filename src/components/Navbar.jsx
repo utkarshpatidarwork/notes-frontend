@@ -1,3 +1,4 @@
+//Navbar.jsx
 function Navbar({
   darkMode,
   setDarkMode,

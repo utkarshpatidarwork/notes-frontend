@@ -1,3 +1,4 @@
+//NoteModal.jsx
 import ReactMarkdown from "react-markdown";
 
 function NoteModal({

@@ -1,3 +1,4 @@
+//SearchBar.jsx
 function SearchBar({
   search,
   setSearch

@@ -1,3 +1,4 @@
+//CategoryFilters.jsx
 function CategoryFilters({
   selectedCategory,
   setSelectedCategory
