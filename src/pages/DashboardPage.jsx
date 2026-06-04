@@ -24,6 +24,8 @@ import {
   uploadFile as uploadFileService
 } from "../services/uploadService";
 
+import { getActivities } from "../services/activityService";
+
 import toast from "react-hot-toast";
 
 import { io } from "socket.io-client";
@@ -120,6 +122,9 @@ function DashboardPage() {
   const [workspaceLoading, setWorkspaceLoading] =
     useState(false);
 
+  const [activities, setActivities] =
+    useState([]);
+
   const navigate = useNavigate();
 
   const API =
@@ -213,6 +218,30 @@ function DashboardPage() {
     }
   };
 
+  const fetchActivities =
+    async () => {
+
+      if (
+        !selectedWorkspace?._id
+      ) {
+        return;
+      }
+
+      try {
+
+        const data =
+          await getActivities(
+            selectedWorkspace._id
+          );
+
+        setActivities(data);
+
+      } catch (error) {
+
+        console.log(error);
+      }
+    };
+
   const fetchMembers =
     async () => {
 
@@ -261,6 +290,8 @@ function DashboardPage() {
       fetchNotes();
 
       fetchMembers();
+
+      fetchActivities();
     }
 
     socket.on(
@@ -563,6 +594,39 @@ function DashboardPage() {
       );
     }
   );
+
+  const formatActivity =
+    (activity) => {
+
+      switch (
+        activity.action
+      ) {
+
+        case "NOTE_CREATED":
+          return `created note "${activity.target}"`;
+
+        case "NOTE_UPDATED":
+          return `updated note "${activity.target}"`;
+
+        case "NOTE_DELETED":
+          return `deleted note "${activity.target}"`;
+
+        case "MEMBER_JOINED":
+          return `joined workspace`;
+
+        case "ROLE_CHANGED":
+          return `changed role to ${activity.target}`;
+
+        case "MEMBER_REMOVED":
+          return `removed member`;
+
+        case "WORKSPACE_CREATED":
+          return `created workspace "${activity.target}"`;
+
+        default:
+          return activity.action;
+      }
+    };
 
   return (
 
@@ -991,7 +1055,82 @@ function DashboardPage() {
           }
 
         </div>
-        
+
+        <div
+          className="
+            bg-white
+            dark:bg-slate-800
+            p-6
+            rounded-2xl
+            shadow-md
+            mb-6
+          "
+        >
+
+          <h2
+            className="
+              text-2xl
+              font-bold
+              mb-4
+              dark:text-white
+            "
+          >
+            Activity Log
+          </h2>
+
+          <div className="space-y-3">
+
+            {
+              activities.length === 0
+              ? (
+                <p
+                  className="
+                    text-gray-500
+                    dark:text-gray-400
+                  "
+                >
+                  No activity yet
+                </p>
+              )
+              : (
+                activities.map(
+                  (activity) => (
+
+                    <div
+                      key={activity._id}
+                      className="
+                        border-b
+                        pb-2
+                      "
+                    >
+
+                      <p
+                        className="
+                          dark:text-white
+                        "
+                      >
+
+                        <strong>
+                          {activity.user?.name}
+                        </strong>
+
+                        {" "}
+
+                        {formatActivity(activity)}
+
+                      </p>
+
+                    </div>
+
+                  )
+                )
+              )
+            }
+
+          </div>
+
+        </div>
+
         <div
           className="
             bg-white
