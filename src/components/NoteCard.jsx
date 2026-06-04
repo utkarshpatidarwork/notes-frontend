@@ -85,6 +85,17 @@ function NoteCard({
           {note.category}
         </div>
 
+        <div
+          className="
+            text-sm
+            text-gray-500
+            dark:text-gray-400
+            mb-3
+          "
+        >
+          👤 {note.user?.name}
+        </div>
+
         {
           note.attachments?.length > 0 && (
 
