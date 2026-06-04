@@ -4,7 +4,22 @@ import {
   useState
 } from "react";
 
-import axios from "axios";
+import {
+  getNotes,
+  createNote as createNoteService,
+  updateNote as updateNoteService,
+  deleteNote as deleteNoteService
+} from "../services/noteService";
+
+import {
+  getWorkspaces,
+  createWorkspace,
+  joinWorkspace
+} from "../services/workspaceService";
+
+import {
+  uploadFile as uploadFileService
+} from "../services/uploadService";
 
 import toast from "react-hot-toast";
 
@@ -53,6 +68,9 @@ function DashboardPage() {
   const [search, setSearch] =
     useState("");
 
+  const [debouncedSearch, setDebouncedSearch] =
+    useState("");
+
   const [selectedCategory, setSelectedCategory] =
     useState("All");
 
@@ -77,17 +95,20 @@ function DashboardPage() {
   const [inviteCode, setInviteCode] =
     useState("");
 
+  const [notesLoading, setNotesLoading] =
+    useState(false);
+
+  const [workspaceLoading, setWorkspaceLoading] =
+    useState(false);
+
   const navigate = useNavigate();
 
   const API =
-    "https://notes-api-m5rs.onrender.com";
+    import.meta.env.VITE_API_URL;
 
   const [socket] = useState(
     () => io(API)
   );
-
-  const token =
-    localStorage.getItem("token");
 
   const logoutHandler = () => {
 
@@ -101,16 +122,10 @@ function DashboardPage() {
 
       try {
 
-        const { data } =
-          await axios.get(
-            `${API}/api/workspaces`,
-            {
-              headers: {
-                Authorization:
-                  `Bearer ${token}`
-              }
-            }
-          );
+        setWorkspaceLoading(true);
+
+        const data =
+          await getWorkspaces();
 
         setWorkspaces(data);
 
@@ -118,6 +133,7 @@ function DashboardPage() {
           data.length > 0 &&
           !selectedWorkspace
         ) {
+
           setSelectedWorkspace(
             data[0]
           );
@@ -126,30 +142,43 @@ function DashboardPage() {
       } catch (error) {
 
         toast.error(
+          error.response?.data?.message
+          ||
           "Workspace fetch failed"
         );
+
+      } finally {
+
+        setWorkspaceLoading(false);
       }
     };
 
   const fetchNotes = async () => {
 
+    if (!selectedWorkspace) return;
+
     try {
 
-      const { data } = await axios.get(
-        `${API}/api/notes?workspace=${selectedWorkspace?._id}`,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`
-          }
-        }
-      );
+      setNotesLoading(true);
+
+      const data =
+        await getNotes(
+          selectedWorkspace._id
+        );
 
       setNotes(data.notes);
 
     } catch (error) {
 
-      toast.error("Something went wrong");
+      toast.error(
+        error.response?.data?.message
+        ||
+        "Something went wrong"
+      );
+
+    } finally {
+
+      setNotesLoading(false);
     }
   };
 
@@ -162,6 +191,11 @@ function DashboardPage() {
   useEffect(() => {
 
     if (selectedWorkspace) {
+
+      socket.emit(
+        "joinWorkspace",
+        selectedWorkspace._id
+      );
 
       fetchNotes();
     }
@@ -177,9 +211,33 @@ function DashboardPage() {
     return () => {
 
       socket.off("notesUpdated");
+
+      if (selectedWorkspace) {
+
+        socket.emit(
+          "leaveWorkspace",
+          selectedWorkspace._id
+        );
+      }
     };
 
   }, [selectedWorkspace]);
+
+  useEffect(() => {
+
+    const timer =
+      setTimeout(() => {
+
+        setDebouncedSearch(search);
+
+      }, 400);
+
+    return () => {
+
+      clearTimeout(timer);
+    };
+
+  }, [search]);
 
   useEffect(() => {
 
@@ -213,27 +271,9 @@ function DashboardPage() {
 
         setUploading(true);
 
-        const formData =
-          new FormData();
-
-        formData.append(
-          "file",
-          file
-        );
-
-        const { data } =
-          await axios.post(
-            `${API}/api/upload`,
-            formData,
-            {
-              headers: {
-                Authorization:
-                  `Bearer ${token}`,
-
-                "Content-Type":
-                  "multipart/form-data"
-              }
-            }
+        const data =
+          await uploadFileService(
+            file
           );
 
         setAttachments(
@@ -252,19 +292,21 @@ function DashboardPage() {
           ]
         );
 
-        setUploading(false);
-
         toast.success(
           "File Uploaded"
         );
 
       } catch (error) {
 
-        setUploading(false);
-
         toast.error(
+          error.response?.data?.message
+          ||
           "Upload failed"
         );
+
+      } finally {
+
+        setUploading(false);
       }
     };
 
@@ -276,24 +318,14 @@ function DashboardPage() {
 
       setCreating(true);
 
-      await axios.post(
-        `${API}/api/notes`,
-        {
-          title,
-          content,
-          attachments,
-          category,
-
-          workspace:
-            selectedWorkspace?._id
-        },
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`
-          }
-        }
-      );
+      await createNoteService({
+        title,
+        content,
+        attachments,
+        category,
+        workspace:
+          selectedWorkspace?._id
+      });
 
       setTitle("");
       setContent("");
@@ -304,13 +336,17 @@ function DashboardPage() {
 
       toast.success("Note Created");
 
-      setCreating(false);
-
     } catch (error) {
 
-      setCreating(false);
+      toast.error(
+        error.response?.data?.message
+        ||
+        "Something went wrong"
+      );
 
-      toast.error("Something went wrong");
+    } finally {
+
+      setCreating(false);
     }
   };
 
@@ -320,22 +356,17 @@ function DashboardPage() {
 
     try {
 
-      await axios.put(
-        `${API}/api/notes/${editingId}`,
+      setCreating(true);
+
+      await updateNoteService(
+        editingId,
         {
           title,
           content,
           attachments,
           category,
-
           workspace:
             selectedWorkspace?._id
-        },
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`
-          }
         }
       );
 
@@ -351,7 +382,14 @@ function DashboardPage() {
 
     } catch (error) {
 
-      toast.error("Something went wrong");
+      toast.error(
+        error.response?.data?.message
+        ||
+        "Something went wrong"
+      );
+
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -359,16 +397,11 @@ function DashboardPage() {
 
     try {
 
-      await axios.put(
-        `${API}/api/notes/${note._id}`,
+      await updateNoteService(
+        note._id,
         {
-          isPinned: !note.isPinned
-        },
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`
-          }
+          isPinned:
+            !note.isPinned
         }
       );
 
@@ -383,6 +416,8 @@ function DashboardPage() {
     } catch (error) {
 
       toast.error(
+        error.response?.data?.message
+        ||
         "Something went wrong"
       );
     }
@@ -392,15 +427,7 @@ function DashboardPage() {
 
     try {
 
-      await axios.delete(
-        `${API}/api/notes/${id}`,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`
-          }
-        }
-      );
+      await deleteNoteService(id);
 
       fetchNotes();
 
@@ -408,7 +435,11 @@ function DashboardPage() {
 
     } catch (error) {
 
-      toast.error("Something went wrong");
+      toast.error(
+        error.response?.data?.message
+        ||
+        "Something went wrong"
+      );
     }
   };
 
@@ -440,7 +471,7 @@ function DashboardPage() {
 
       const matchesSearch =
         text.includes(
-          search.toLowerCase()
+          debouncedSearch.toLowerCase()
         );
 
       const matchesCategory =
@@ -529,18 +560,8 @@ function DashboardPage() {
 
                 try {
 
-                  await axios.post(
-                    `${API}/api/workspaces`,
-                    {
-                      name:
-                        workspaceName
-                    },
-                    {
-                      headers: {
-                        Authorization:
-                          `Bearer ${token}`
-                      }
-                    }
+                  await createWorkspace(
+                    workspaceName
                   );
 
                   setWorkspaceName("");
@@ -598,17 +619,8 @@ function DashboardPage() {
 
                 try {
 
-                  await axios.post(
-                    `${API}/api/workspaces/join`,
-                    {
-                      inviteCode
-                    },
-                    {
-                      headers: {
-                        Authorization:
-                          `Bearer ${token}`
-                      }
-                    }
+                  await joinWorkspace(
+                    inviteCode
                   );
 
                   setInviteCode("");
@@ -643,56 +655,73 @@ function DashboardPage() {
 
           </div>
 
-          <div className="flex gap-3 flex-wrap">
+          {
+            workspaceLoading ? (
 
-            {
-              workspaces.map(
-                (workspace) => (
+              <div
+                className="
+                  text-gray-500
+                  dark:text-gray-300
+                "
+              >
+                Loading Workspaces...
+              </div>
 
-                  <button
-                    key={workspace._id}
-                    onClick={() =>
-                      setSelectedWorkspace(
-                        workspace
-                      )
-                    }
-                    className={`
-                      px-4
-                      py-2
-                      rounded-full
-                      active:scale-95
-                      transition
-                      ${
-                        selectedWorkspace?._id
-                        === workspace._id
-                          ? "bg-blue-600 text-white"
-                          : "bg-slate-200"
-                      }
-                    `}
-                  >
-                    <div>
+            ) : (
 
-                      <div>
-                        {workspace.name}
-                      </div>
+              <div className="flex gap-3 flex-wrap">
 
-                      <div
-                        className="
-                          text-xs
-                          opacity-70
-                        "
+                {
+                  workspaces.map(
+                    (workspace) => (
+
+                      <button
+                        key={workspace._id}
+                        onClick={() =>
+                          setSelectedWorkspace(
+                            workspace
+                          )
+                        }
+                        className={`
+                          px-4
+                          py-2
+                          rounded-full
+                          active:scale-95
+                          transition
+                          ${
+                            selectedWorkspace?._id
+                            === workspace._id
+                              ? "bg-blue-600 text-white"
+                              : "bg-slate-200"
+                          }
+                        `}
                       >
-                        {workspace.inviteCode}
-                      </div>
+                        <div>
 
-                    </div>
-                  </button>
+                          <div>
+                            {workspace.name}
+                          </div>
 
-                )
-              )
-            }
+                          <div
+                            className="
+                              text-xs
+                              opacity-70
+                            "
+                          >
+                            {workspace.inviteCode}
+                          </div>
 
-          </div>
+                        </div>
+                      </button>
+
+                    )
+                  )
+                }
+
+              </div>
+
+            )
+          }
 
         </div>
         
@@ -978,7 +1007,19 @@ function DashboardPage() {
         />
 
         {
-          filteredNotes.length === 0 ? (
+          notesLoading ? (
+
+            <div
+              className="
+                text-center
+                py-20
+                dark:text-white
+              "
+            >
+              Loading Notes...
+            </div>
+
+          ) : filteredNotes.length === 0 ? (
 
             <div
               className="

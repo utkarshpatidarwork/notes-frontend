@@ -1,7 +1,9 @@
 //LoginPage.jsx
 import { useState } from "react";
 
-import axios from "axios";
+import {
+  loginUser
+} from "../services/authService";
 
 import toast from "react-hot-toast";
 
@@ -25,12 +27,10 @@ function LoginPage() {
 
     try {
 
-      const { data } = await axios.post(
-        "https://notes-api-m5rs.onrender.com/api/users/login",
-        {
+      const data = 
+        await loginUser(
           email,
           password
-        }
       );
 
       localStorage.setItem(

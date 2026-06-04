@@ -3,7 +3,9 @@ import {
   useState
 } from "react";
 
-import axios from "axios";
+import {
+  registerUser
+} from "../services/authService";
 
 import toast from "react-hot-toast";
 
@@ -25,9 +27,6 @@ function RegisterPage() {
   const navigate =
     useNavigate();
 
-  const API =
-    import.meta.env.VITE_API_URL;
-
   const registerHandler =
     async (e) => {
 
@@ -35,14 +34,11 @@ function RegisterPage() {
 
       try {
 
-        const { data } =
-          await axios.post(
-            `${API}/api/users/register`,
-            {
+        const data =
+          await registerUser(
               name,
               email,
               password
-            }
           );
 
         localStorage.setItem(
