@@ -93,7 +93,17 @@ function DashboardPage() {
     useState("");
 
   const [selectedWorkspace, setSelectedWorkspace] =
-    useState(null);
+    useState(() => {
+
+      const saved =
+        localStorage.getItem(
+          "selectedWorkspace"
+        );
+
+      return saved
+        ? JSON.parse(saved)
+        : null;
+    });
 
   const [inviteCode, setInviteCode] =
     useState("");
@@ -138,12 +148,24 @@ function DashboardPage() {
 
         setWorkspaces(data);
 
-        if (
-          data.length > 0 &&
-          !selectedWorkspace
-        ) {
+        if (data.length > 0) {
+
+          const savedId =
+            localStorage.getItem(
+              "selectedWorkspace"
+            );
+
+          const savedWorkspace =
+            savedId
+              ? data.find(
+                  (workspace) =>
+                    workspace._id ===
+                    JSON.parse(savedId)._id
+                )
+              : null;
 
           setSelectedWorkspace(
+            savedWorkspace ||
             data[0]
           );
         }
@@ -304,6 +326,20 @@ function DashboardPage() {
     }
 
   }, [darkMode]);
+
+  useEffect(() => {
+
+    if (selectedWorkspace) {
+
+      localStorage.setItem(
+        "selectedWorkspace",
+        JSON.stringify(
+          selectedWorkspace
+        )
+      );
+    }
+
+  }, [selectedWorkspace]);
 
   const uploadFile =
     async (file) => {
