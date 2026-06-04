@@ -14,7 +14,10 @@ import {
 import {
   getWorkspaces,
   createWorkspace,
-  joinWorkspace
+  joinWorkspace,
+  getWorkspaceMembers,
+  changeMemberRole,
+  removeMember
 } from "../services/workspaceService";
 
 import {
@@ -94,6 +97,12 @@ function DashboardPage() {
 
   const [inviteCode, setInviteCode] =
     useState("");
+
+  const [members, setMembers] =
+    useState([]);
+
+  const [membersLoading, setMembersLoading] =
+    useState(false);
 
   const [notesLoading, setNotesLoading] =
     useState(false);
@@ -182,6 +191,36 @@ function DashboardPage() {
     }
   };
 
+  const fetchMembers =
+    async () => {
+
+      if (!selectedWorkspace) return;
+
+      try {
+
+        setMembersLoading(true);
+
+        const data =
+          await getWorkspaceMembers(
+            selectedWorkspace._id
+          );
+
+        setMembers(data);
+
+      } catch (error) {
+
+        toast.error(
+          error.response?.data?.message
+          ||
+          "Failed to load members"
+        );
+
+      } finally {
+
+        setMembersLoading(false);
+      }
+    };
+
   useEffect(() => {
 
     fetchWorkspaces();
@@ -198,6 +237,8 @@ function DashboardPage() {
       );
 
       fetchNotes();
+
+      fetchMembers();
     }
 
     socket.on(
@@ -715,6 +756,196 @@ function DashboardPage() {
                       </button>
 
                     )
+                  )
+                }
+
+              </div>
+
+            )
+          }
+
+        </div>
+
+        <div
+          className="
+            bg-white
+            dark:bg-slate-800
+            p-6
+            rounded-2xl
+            shadow-md
+            mb-6
+          "
+        >
+
+          <h2
+            className="
+              text-2xl
+              font-bold
+              mb-4
+              dark:text-white
+            "
+          >
+            Members
+          </h2>
+
+          {
+            membersLoading ? (
+
+              <div
+                className="
+                  dark:text-white
+                "
+              >
+                Loading Members...
+              </div>
+
+            ) : (
+
+              <div className="space-y-4">
+
+                {
+                  members.map(
+                    (member) => {
+
+                      const isOwner =
+                        member.role === "owner";
+
+                      return (
+
+                        <div
+                          key={member._id}
+                          className="
+                            flex
+                            flex-col
+                            md:flex-row
+                            md:items-center
+                            md:justify-between
+                            gap-3
+                            border-b
+                            pb-3
+                          "
+                        >
+
+                          <div>
+
+                            <div
+                              className="
+                                font-semibold
+                                dark:text-white
+                              "
+                            >
+                              {member.user.name}
+                            </div>
+
+                            <div
+                              className="
+                                text-sm
+                                text-gray-500
+                              "
+                            >
+                              {member.user.email}
+                            </div>
+
+                          </div>
+
+                          <div
+                            className="
+                              flex
+                              gap-2
+                              items-center
+                            "
+                          >
+
+                            <select
+                              disabled={isOwner}
+                              value={member.role}
+                              onChange={async (e) => {
+
+                                try {
+
+                                  await changeMemberRole(
+                                    selectedWorkspace._id,
+                                    member.user._id,
+                                    e.target.value
+                                  );
+
+                                  fetchMembers();
+
+                                  toast.success(
+                                    "Role Updated"
+                                  );
+
+                                } catch (error) {
+
+                                  toast.error(
+                                    error.response?.data?.message
+                                    ||
+                                    "Update failed"
+                                  );
+                                }
+                              }}
+                              className="
+                                border
+                                rounded-lg
+                                px-3
+                                py-2
+                              "
+                            >
+
+                              <option value="viewer">
+                                Viewer
+                              </option>
+
+                              <option value="editor">
+                                Editor
+                              </option>
+
+                            </select>
+
+                            <button
+                              disabled={isOwner}
+                              onClick={async () => {
+
+                                try {
+
+                                  await removeMember(
+                                    selectedWorkspace._id,
+                                    member.user._id
+                                  );
+
+                                  fetchMembers();
+
+                                  toast.success(
+                                    "Member Removed"
+                                  );
+
+                                } catch (error) {
+
+                                  toast.error(
+                                    error.response?.data?.message
+                                    ||
+                                    "Remove failed"
+                                  );
+                                }
+                              }}
+                              className="
+                                bg-red-500
+                                text-white
+                                px-4
+                                py-2
+                                rounded-lg
+                              "
+                            >
+                              Remove
+                            </button>
+
+                          </div>
+
+                        </div>
+
+                      );
+
+                    }
                   )
                 }
 

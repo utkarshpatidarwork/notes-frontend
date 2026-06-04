@@ -35,3 +35,54 @@ export const joinWorkspace =
 
     return data;
   };
+
+export const getWorkspaceMembers =
+  async (workspaceId) => {
+
+    const { data } =
+      await api.get(
+        `/api/workspaces/${workspaceId}/members`
+      );
+
+    return data;
+  };
+
+export const changeMemberRole =
+  async (
+    workspaceId,
+    memberId,
+    role
+  ) => {
+
+    const { data } =
+      await api.put(
+        "/api/workspaces/role",
+        {
+          workspaceId,
+          memberId,
+          role
+        }
+      );
+
+    return data;
+  };
+
+export const removeMember =
+  async (
+    workspaceId,
+    memberId
+  ) => {
+
+    const { data } =
+      await api.delete(
+        "/api/workspaces/member",
+        {
+          data: {
+            workspaceId,
+            memberId
+          }
+        }
+      );
+
+    return data;
+  };
