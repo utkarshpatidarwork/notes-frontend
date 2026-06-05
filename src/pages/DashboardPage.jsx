@@ -136,6 +136,22 @@ function DashboardPage() {
   const [showTrash, setShowTrash] =
     useState(false);
 
+  const currentUser =
+    JSON.parse(
+      localStorage.getItem(
+        "user"
+      )
+    );
+
+  const isOwner =
+    String(
+      selectedWorkspace?.owner
+    )
+    ===
+    String(
+      currentUser?._id
+    );
+
   const navigate = useNavigate();
 
   const API =
@@ -183,6 +199,11 @@ function DashboardPage() {
           setSelectedWorkspace(
             savedWorkspace ||
             data[0]
+          );
+        } else {
+
+          setSelectedWorkspace(
+            null
           );
         }
 
@@ -399,6 +420,12 @@ function DashboardPage() {
         JSON.stringify(
           selectedWorkspace
         )
+      );
+
+    } else {
+
+      localStorage.removeItem(
+        "selectedWorkspace"
       );
     }
 
@@ -918,13 +945,7 @@ function DashboardPage() {
                           workspace._id
                           && (
 
-                            workspace.owner
-                            ===
-                            JSON.parse(
-                              localStorage.getItem(
-                                "user"
-                              )
-                            )?._id
+                            isOwner
 
                             ? (
 
