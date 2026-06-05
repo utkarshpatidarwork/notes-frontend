@@ -53,20 +53,9 @@ export const deleteNote =
 export const getArchivedNotes =
   async (workspaceId) => {
 
-    const token =
-      localStorage.getItem("token");
-
-    const config = {
-      headers: {
-        Authorization:
-          `Bearer ${token}`
-      }
-    };
-
     const { data } =
-      await axios.get(
-        `${API_URL}/api/notes/trash?workspace=${workspaceId}`,
-        config
+      await api.get(
+        `/api/notes/trash?workspace=${workspaceId}`
       );
 
     return data;
@@ -75,21 +64,9 @@ export const getArchivedNotes =
 export const restoreNote =
   async (id) => {
 
-    const token =
-      localStorage.getItem("token");
-
-    const config = {
-      headers: {
-        Authorization:
-          `Bearer ${token}`
-      }
-    };
-
     const { data } =
-      await axios.put(
-        `${API_URL}/api/notes/restore/${id}`,
-        {},
-        config
+      await api.put(
+        `/api/notes/restore/${id}`
       );
 
     return data;
@@ -98,20 +75,9 @@ export const restoreNote =
 export const permanentlyDeleteNote =
   async (id) => {
 
-    const token =
-      localStorage.getItem("token");
-
-    const config = {
-      headers: {
-        Authorization:
-          `Bearer ${token}`
-      }
-    };
-
     const { data } =
-      await axios.delete(
-        `${API_URL}/api/notes/permanent/${id}`,
-        config
+      await api.delete(
+        `/api/notes/permanent/${id}`
       );
 
     return data;
