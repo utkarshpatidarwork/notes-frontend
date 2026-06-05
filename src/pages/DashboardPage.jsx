@@ -868,7 +868,7 @@ function DashboardPage() {
                         className="
                           flex
                           flex-col
-                          items-start
+                          items-center
                         "
                       >
 
