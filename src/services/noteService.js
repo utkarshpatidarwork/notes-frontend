@@ -49,3 +49,70 @@ export const deleteNote =
 
     return data;
   };
+
+export const getArchivedNotes =
+  async (workspaceId) => {
+
+    const token =
+      localStorage.getItem("token");
+
+    const config = {
+      headers: {
+        Authorization:
+          `Bearer ${token}`
+      }
+    };
+
+    const { data } =
+      await axios.get(
+        `${API_URL}/api/notes/trash?workspace=${workspaceId}`,
+        config
+      );
+
+    return data;
+  };
+
+export const restoreNote =
+  async (id) => {
+
+    const token =
+      localStorage.getItem("token");
+
+    const config = {
+      headers: {
+        Authorization:
+          `Bearer ${token}`
+      }
+    };
+
+    const { data } =
+      await axios.put(
+        `${API_URL}/api/notes/restore/${id}`,
+        {},
+        config
+      );
+
+    return data;
+  };
+
+export const permanentlyDeleteNote =
+  async (id) => {
+
+    const token =
+      localStorage.getItem("token");
+
+    const config = {
+      headers: {
+        Authorization:
+          `Bearer ${token}`
+      }
+    };
+
+    const { data } =
+      await axios.delete(
+        `${API_URL}/api/notes/permanent/${id}`,
+        config
+      );
+
+    return data;
+  };

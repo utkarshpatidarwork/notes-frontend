@@ -8,7 +8,10 @@ import {
   getNotes,
   createNote as createNoteService,
   updateNote as updateNoteService,
-  deleteNote as deleteNoteService
+  deleteNote as deleteNoteService,
+  getArchivedNotes,
+  restoreNote,
+  permanentlyDeleteNote
 } from "../services/noteService";
 
 import {
@@ -125,6 +128,12 @@ function DashboardPage() {
   const [activities, setActivities] =
     useState([]);
 
+  const [trashNotes, setTrashNotes] =
+    useState([]);
+
+  const [showTrash, setShowTrash] =
+    useState(false);
+
   const navigate = useNavigate();
 
   const API =
@@ -218,6 +227,28 @@ function DashboardPage() {
     }
   };
 
+  const fetchTrashNotes =
+    async () => {
+
+      if (!selectedWorkspace) {
+        return;
+      }
+
+      try {
+
+        const data =
+          await getArchivedNotes(
+            selectedWorkspace._id
+          );
+
+        setTrashNotes(data);
+
+      } catch (error) {
+
+        console.log(error);
+      }
+    };
+
   const fetchActivities =
     async () => {
 
@@ -288,10 +319,9 @@ function DashboardPage() {
       );
 
       fetchNotes();
-
       fetchMembers();
-
       fetchActivities();
+      fetchTrashNotes();
     }
 
     socket.on(
@@ -1411,6 +1441,148 @@ function DashboardPage() {
             setSelectedCategory
           }
         />
+
+        <button
+          onClick={() =>
+            setShowTrash(
+              !showTrash
+            )
+          }
+          className="
+            bg-slate-700
+            text-white
+            px-4
+            py-2
+            rounded-lg
+            mb-4
+          "
+        >
+          {
+            showTrash
+              ? "Show Notes"
+              : "Open Trash"
+          }
+        </button>
+
+        {
+          showTrash && (
+
+            <div
+              className="
+                bg-white
+                dark:bg-slate-800
+                rounded-2xl
+                shadow-md
+                p-6
+                mb-6
+              "
+            >
+
+              <h2
+                className="
+                  text-2xl
+                  font-bold
+                  mb-4
+                  dark:text-white
+                "
+              >
+                Trash
+              </h2>
+
+              {
+                trashNotes.length === 0 ? (
+
+                  <div
+                    className="
+                      text-gray-500
+                      dark:text-gray-400
+                    "
+                  >
+                    Trash is empty
+                  </div>
+
+                ) : (
+
+                  trashNotes.map(
+                    (note) => (
+
+                      <div
+                        key={note._id}
+                        className="
+                          border-b
+                          py-4
+                          flex
+                          justify-between
+                          items-center
+                        "
+                      >
+
+                        <div
+                          className="
+                            dark:text-white
+                          "
+                        >
+                          {note.title}
+                        </div>
+
+                        <div className="flex gap-2">
+
+                          <button
+                            onClick={async () => {
+
+                              await restoreNote(
+                                note._id
+                              );
+
+                              fetchTrashNotes();
+
+                              fetchNotes();
+                            }}
+                            className="
+                              bg-green-600
+                              text-white
+                              px-3
+                              py-1
+                              rounded
+                            "
+                          >
+                            Restore
+                          </button>
+
+                          <button
+                            onClick={async () => {
+
+                              await permanentlyDeleteNote(
+                                note._id
+                              );
+
+                              fetchTrashNotes();
+                            }}
+                            className="
+                              bg-red-600
+                              text-white
+                              px-3
+                              py-1
+                              rounded
+                            "
+                          >
+                            Delete Forever
+                          </button>
+
+                        </div>
+
+                      </div>
+
+                    )
+                  )
+
+                )
+              }
+
+            </div>
+
+          )
+        }
 
         {
           notesLoading ? (
