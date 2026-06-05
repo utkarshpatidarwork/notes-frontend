@@ -144,13 +144,7 @@ function DashboardPage() {
     );
 
   const reqUserId =
-    currentUser?._id
-    ||
-    currentUser?.id
-    ||
-    currentUser?.user?._id
-    ||
-    currentUser?.user?.id;
+    currentUser?._id;
 
   const navigate = useNavigate();
 
@@ -357,9 +351,34 @@ function DashboardPage() {
       }
     );
 
+    socket.on(
+      "workspaceDeleted",
+      async (workspaceId) => {
+
+        if (
+          selectedWorkspace?._id
+          ===
+          workspaceId
+        ) {
+
+          localStorage.removeItem(
+            "selectedWorkspace"
+          );
+
+          setSelectedWorkspace(
+            null
+          );
+        }
+
+        await fetchWorkspaces();
+      }
+    );
+
     return () => {
 
       socket.off("notesUpdated");
+
+      socket.off("workspaceDeleted");
 
       if (selectedWorkspace) {
 
