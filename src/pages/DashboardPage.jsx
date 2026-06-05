@@ -20,7 +20,8 @@ import {
   joinWorkspace,
   getWorkspaceMembers,
   changeMemberRole,
-  removeMember
+  removeMember,
+  leaveWorkspace
 } from "../services/workspaceService";
 
 import {
@@ -663,6 +664,9 @@ function DashboardPage() {
         case "MEMBER_REMOVED":
           return `removed member`;
 
+        case "MEMBER_LEFT":
+          return `left workspace`;
+
         case "WORKSPACE_CREATED":
           return `created workspace "${activity.target}"`;
 
@@ -859,44 +863,117 @@ function DashboardPage() {
                   workspaces.map(
                     (workspace) => (
 
-                      <button
+                      <div
                         key={workspace._id}
-                        onClick={() =>
-                          setSelectedWorkspace(
-                            workspace
+                        className="
+                          flex
+                          flex-col
+                          items-start
+                        "
+                      >
+
+                        <button
+                          onClick={() =>
+                            setSelectedWorkspace(
+                              workspace
+                            )
+                          }
+                          className={`
+                            px-4
+                            py-2
+                            rounded-full
+                            active:scale-95
+                            transition
+                            ${
+                              selectedWorkspace?._id
+                              === workspace._id
+                                ? "bg-blue-600 text-white"
+                                : "bg-slate-200"
+                            }
+                          `}
+                        >
+                          <div>
+
+                            <div>
+                              {workspace.name}
+                            </div>
+
+                            <div
+                              className="
+                                text-xs
+                                opacity-70
+                              "
+                            >
+                              {workspace.inviteCode}
+                            </div>
+
+                          </div>
+
+                        </button>
+
+                        {
+                          selectedWorkspace?._id
+                          === workspace._id
+                          &&
+                          workspace.owner
+                          !==
+                          JSON.parse(
+                            localStorage.getItem(
+                              "user"
+                            )
+                          )?._id
+                          && (
+
+                            <button
+                              onClick={async () => {
+
+                                try {
+
+                                  const data =
+                                    await leaveWorkspace(
+                                      workspace._id
+                                    );
+
+                                  toast.success(
+                                    data.message
+                                  );
+
+                                  localStorage.removeItem(
+                                    "selectedWorkspace"
+                                  );
+
+                                  setSelectedWorkspace(
+                                    null
+                                  );
+
+                                  fetchWorkspaces();
+
+                                } catch (error) {
+
+                                  toast.error(
+                                    error.response?.data?.message
+                                    ||
+                                    "Failed to leave workspace"
+                                  );
+                                }
+                              }}
+                              className="
+                                mt-2
+                                bg-red-500
+                                text-white
+                                px-3
+                                py-1
+                                rounded-lg
+                                text-xs
+                              "
+                            >
+                              Leave
+                            </button>
+
                           )
                         }
-                        className={`
-                          px-4
-                          py-2
-                          rounded-full
-                          active:scale-95
-                          transition
-                          ${
-                            selectedWorkspace?._id
-                            === workspace._id
-                              ? "bg-blue-600 text-white"
-                              : "bg-slate-200"
-                          }
-                        `}
-                      >
-                        <div>
 
-                          <div>
-                            {workspace.name}
-                          </div>
-
-                          <div
-                            className="
-                              text-xs
-                              opacity-70
-                            "
-                          >
-                            {workspace.inviteCode}
-                          </div>
-
-                        </div>
-                      </button>
+                      </div>
 
                     )
                   )

@@ -86,3 +86,17 @@ export const removeMember =
 
     return data;
   };
+
+export const leaveWorkspace =
+  async (workspaceId) => {
+
+    const { data } =
+      await api.post(
+        "/api/workspaces/leave",
+        {
+          workspaceId
+        }
+      );
+
+    return data;
+  };
