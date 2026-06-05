@@ -143,15 +143,6 @@ function DashboardPage() {
       )
     );
 
-  const isOwner =
-    String(
-      selectedWorkspace?.owner
-    )
-    ===
-    String(
-      currentUser?._id
-    );
-
   const navigate = useNavigate();
 
   const API =
@@ -945,7 +936,13 @@ function DashboardPage() {
                           workspace._id
                           && (
 
-                            isOwner
+                            String(
+                              workspace.owner
+                            )
+                            ===
+                            String(
+                              currentUser?._id
+                            )
 
                             ? (
 
