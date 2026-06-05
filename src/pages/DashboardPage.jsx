@@ -143,6 +143,15 @@ function DashboardPage() {
       )
     );
 
+  const reqUserId =
+    currentUser?._id
+    ||
+    currentUser?.id
+    ||
+    currentUser?.user?._id
+    ||
+    currentUser?.user?.id;
+
   const navigate = useNavigate();
 
   const API =
@@ -936,13 +945,13 @@ function DashboardPage() {
                           workspace._id
                           && (
 
-                            String(
-                              workspace.owner
-                            )
-                            ===
-                            String(
-                              currentUser?._id
-                            )
+                           String(
+                            workspace.owner
+                          )
+                          ===
+                          String(
+                            reqUserId
+                          )
 
                             ? (
 
