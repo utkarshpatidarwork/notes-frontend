@@ -1118,7 +1118,7 @@ function DashboardPage() {
               dark:text-white
             "
           >
-            Activity Log
+            Recent Activity
           </h2>
 
           <div className="space-y-3">
@@ -1136,7 +1136,9 @@ function DashboardPage() {
                 </p>
               )
               : (
-                activities.map(
+                activities
+                  .slice(0, 5)
+                  .map(
                   (activity) => (
 
                     <div
