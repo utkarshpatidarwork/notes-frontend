@@ -201,6 +201,11 @@ function DashboardPage() {
           setSelectedWorkspace(
             null
           );
+
+          setNotes([]);
+          setMembers([]);
+          setActivities([]);
+          setTrashNotes([]);
         }
 
       } catch (error) {
@@ -219,7 +224,12 @@ function DashboardPage() {
 
   const fetchNotes = async () => {
 
-    if (!selectedWorkspace) return;
+    if (!selectedWorkspace) {
+      
+      setNotes([]);
+      
+      return;
+    }
 
     try {
 
@@ -250,6 +260,9 @@ function DashboardPage() {
     async () => {
 
       if (!selectedWorkspace) {
+        
+        setTrashNotes([]);
+        
         return;
       }
 
@@ -274,6 +287,9 @@ function DashboardPage() {
       if (
         !selectedWorkspace?._id
       ) {
+
+        setActivities([]);
+
         return;
       }
 
@@ -295,7 +311,12 @@ function DashboardPage() {
   const fetchMembers =
     async () => {
 
-      if (!selectedWorkspace) return;
+      if (!selectedWorkspace) {
+        
+        setMembers([]);
+        
+        return;
+      }
 
       try {
 
@@ -1096,578 +1117,8 @@ function DashboardPage() {
 
         </div>
 
-        <div
-          className="
-            bg-white
-            dark:bg-slate-800
-            p-6
-            rounded-2xl
-            shadow-md
-            mb-6
-          "
-        >
-
-          <h2
-            className="
-              text-2xl
-              font-bold
-              mb-4
-              dark:text-white
-            "
-          >
-            Members
-          </h2>
-
-          {
-            membersLoading ? (
-
-              <div
-                className="
-                  dark:text-white
-                "
-              >
-                Loading Members...
-              </div>
-
-            ) : (
-
-              <div className="space-y-4">
-
                 {
-                  members.map(
-                    (member) => {
-
-                      const isOwner =
-                        member.role === "owner";
-
-                      return (
-
-                        <div
-                          key={member._id}
-                          className="
-                            flex
-                            flex-col
-                            md:flex-row
-                            md:items-center
-                            md:justify-between
-                            gap-3
-                            border-b
-                            pb-3
-                          "
-                        >
-
-                          <div>
-
-                            <div
-                              className="
-                                font-semibold
-                                dark:text-white
-                              "
-                            >
-                              {member.user.name}
-                            </div>
-
-                            <div
-                              className="
-                                text-sm
-                                text-gray-500
-                              "
-                            >
-                              {member.user.email}
-                            </div>
-
-                          </div>
-
-                          <div
-                            className="
-                              flex
-                              gap-2
-                              items-center
-                            "
-                          >
-
-                            <select
-                              disabled={isOwner}
-                              value={member.role}
-                              onChange={async (e) => {
-
-                                try {
-
-                                  await changeMemberRole(
-                                    selectedWorkspace._id,
-                                    member.user._id,
-                                    e.target.value
-                                  );
-
-                                  fetchMembers();
-
-                                  toast.success(
-                                    "Role Updated"
-                                  );
-
-                                } catch (error) {
-
-                                  toast.error(
-                                    error.response?.data?.message
-                                    ||
-                                    "Update failed"
-                                  );
-                                }
-                              }}
-                              className="
-                                border
-                                rounded-lg
-                                px-3
-                                py-2
-                              "
-                            >
-
-                              <option value="viewer">
-                                Viewer
-                              </option>
-
-                              <option value="editor">
-                                Editor
-                              </option>
-
-                            </select>
-
-                            <button
-                              disabled={isOwner}
-                              onClick={async () => {
-
-                                try {
-
-                                  await removeMember(
-                                    selectedWorkspace._id,
-                                    member.user._id
-                                  );
-
-                                  fetchMembers();
-
-                                  toast.success(
-                                    "Member Removed"
-                                  );
-
-                                } catch (error) {
-
-                                  toast.error(
-                                    error.response?.data?.message
-                                    ||
-                                    "Remove failed"
-                                  );
-                                }
-                              }}
-                              className="
-                                bg-red-500
-                                text-white
-                                px-4
-                                py-2
-                                rounded-lg
-                              "
-                            >
-                              Remove
-                            </button>
-
-                          </div>
-
-                        </div>
-
-                      );
-
-                    }
-                  )
-                }
-
-              </div>
-
-            )
-          }
-
-        </div>
-
-        <div
-          className="
-            bg-white
-            dark:bg-slate-800
-            p-6
-            rounded-2xl
-            shadow-md
-            mb-6
-          "
-        >
-
-          <h2
-            className="
-              text-2xl
-              font-bold
-              mb-4
-              dark:text-white
-            "
-          >
-            Recent Activity
-          </h2>
-
-          <div className="space-y-3">
-
-            {
-              activities.length === 0
-              ? (
-                <p
-                  className="
-                    text-gray-500
-                    dark:text-gray-400
-                  "
-                >
-                  No activity yet
-                </p>
-              )
-              : (
-                activities
-                  .slice(0, 5)
-                  .map(
-                  (activity) => (
-
-                    <div
-                      key={activity._id}
-                      className="
-                        border-b
-                        pb-2
-                      "
-                    >
-
-                      <p
-                        className="
-                          dark:text-white
-                        "
-                      >
-
-                        <strong>
-                          {activity.user?.name}
-                        </strong>
-
-                        {" "}
-
-                        {formatActivity(activity)}
-
-                      </p>
-
-                    </div>
-
-                  )
-                )
-              )
-            }
-
-          </div>
-
-        </div>
-
-        <div
-          className="
-            bg-white
-            dark:bg-slate-800
-            p-6
-            rounded-2xl
-            shadow-md
-            mb-10
-          "
-        >
-
-          <h2
-            className="
-              text-2xl
-              font-semibold
-              mb-4
-              dark:text-white
-            "
-          >
-            {
-              editingId
-                ? "Update Note"
-                : "Create Note"
-            }
-          </h2>
-
-          <form
-            onSubmit={
-              editingId
-                ? updateNote
-                : createNote
-            }
-            className="
-              flex
-              flex-col
-              gap-4
-            "
-          >
-
-            <input
-              type="text"
-              placeholder="Title"
-              value={title}
-              onChange={(e) =>
-                setTitle(e.target.value)
-              }
-              className="
-                border
-                rounded-lg
-                px-4
-                py-3
-                outline-none
-                focus:ring-2
-                focus:ring-blue-500
-                dark:bg-slate-700
-                dark:text-white
-                dark:border-slate-600
-              "
-            />
-
-            <textarea
-              placeholder="Content"
-              value={content}
-              onChange={(e) =>
-                setContent(e.target.value)
-              }
-              rows={10}
-              className="
-                border
-                rounded-lg
-                px-4
-                py-3
-                outline-none
-                focus:ring-2
-                focus:ring-blue-500
-                dark:bg-slate-700
-                dark:text-white
-                dark:border-slate-600
-                resize-y
-                min-h-[250px]
-              "
-            />
-
-            <select
-              value={category}
-              onChange={(e) =>
-                setCategory(e.target.value)
-              }
-              className="
-                border
-                rounded-lg
-                px-4
-                py-3
-                outline-none
-                focus:ring-2
-                focus:ring-blue-500
-                dark:bg-slate-700
-                dark:text-white
-                dark:border-slate-600
-              "
-            >
-
-              <option value="General">
-                General
-              </option>
-
-              <option value="Work">
-                Work
-              </option>
-
-              <option value="Personal">
-                Personal
-              </option>
-
-              <option value="Study">
-                Study
-              </option>
-
-              <option value="Ideas">
-                Ideas
-              </option>
-
-              <option value="Projects">
-                Projects
-              </option>
-
-            </select>
-
-            <label
-              className="
-                flex
-                flex-col
-                items-center
-                justify-center
-                border-2
-                border-dashed
-                border-slate-300
-                dark:border-slate-600
-                rounded-2xl
-                p-10
-                cursor-pointer
-                hover:border-blue-500
-                hover:bg-blue-50
-                dark:hover:bg-slate-700
-                transition
-                duration-300
-                text-gray-600
-                dark:text-gray-300
-                font-medium
-                animate-fadeIn
-              "
-            >
-
-              <input
-                type="file"
-                multiple
-                className="hidden"
-                onChange={(e) => {
-
-                  Array.from(
-                    e.target.files
-                  ).forEach((file) => {
-
-                    uploadFile(file);
-                  });
-                }}
-              />
-
-              <div className="text-5xl mb-3">
-                📁
-              </div>
-
-              <div className="text-lg font-semibold">
-                {
-                  uploading
-                    ? "Uploading..."
-                    : "Choose Files"
-                }
-              </div>
-
-              <div
-                className="
-                  text-sm
-                  text-gray-500
-                  mt-2
-                  text-center
-                "
-              >
-                Drag & drop files or click
-                to browse
-              </div>
-
-            </label>
-
-            {
-              attachments.length > 0 && (
-
-                <div
-                  className="
-                    mt-4
-                    flex
-                    flex-wrap
-                    gap-3
-                  "
-                >
-
-                  {
-                    attachments.map(
-                      (file, index) => (
-
-                        <div
-                          key={index}
-                          className="
-                            bg-slate-100
-                            dark:bg-slate-700
-                            px-4
-                            py-2
-                            rounded-xl
-                            text-sm
-                            dark:text-white
-                            shadow-sm
-                          "
-                        >
-                          📎 {file.name}
-                        </div>
-
-                      )
-                    )
-                  }
-
-                </div>
-
-              )
-            }
-
-            <button
-              type="submit"
-              disabled={creating}
-              className="
-                bg-blue-600
-                hover:bg-blue-700
-                active:scale-95
-                focus:ring-2
-                focus:ring-blue-500
-                focus:outline-none
-                text-white
-                py-3
-                rounded-lg
-                font-semibold
-                disabled:opacity-50
-              "
-            >
-              {
-                creating
-                  ? "Saving..."
-                  : (
-                      editingId
-                        ? "Update Note"
-                        : "Create Note"
-                    )
-              }
-            </button>
-
-          </form>
-
-        </div>
-
-        <SearchBar
-          search={search}
-          setSearch={setSearch}
-        />
-
-        <CategoryFilters
-          selectedCategory={
-            selectedCategory
-          }
-          setSelectedCategory={
-            setSelectedCategory
-          }
-        />
-
-        <button
-          onClick={() =>
-            setShowTrash(
-              !showTrash
-            )
-          }
-          className="
-            bg-slate-700
-            text-white
-            px-4
-            py-2
-            rounded-lg
-            mb-4
-          "
-        >
-          {
-            showTrash
-              ? "Show Notes"
-              : "Open Trash"
-          }
-        </button>
-
-        {
-          showTrash && (
+          !selectedWorkspace ? (
 
             <div
               className="
@@ -1675,220 +1126,839 @@ function DashboardPage() {
                 dark:bg-slate-800
                 rounded-2xl
                 shadow-md
-                p-6
-                mb-6
-              "
-            >
-
-              <h2
-                className="
-                  text-2xl
-                  font-bold
-                  mb-4
-                  dark:text-white
-                "
-              >
-                Trash
-              </h2>
-
-              {
-                trashNotes.length === 0 ? (
-
-                  <div
-                    className="
-                      text-gray-500
-                      dark:text-gray-400
-                    "
-                  >
-                    Trash is empty
-                  </div>
-
-                ) : (
-
-                  trashNotes.map(
-                    (note) => (
-
-                      <div
-                        key={note._id}
-                        className="
-                          border-b
-                          py-4
-                          flex
-                          justify-between
-                          items-center
-                        "
-                      >
-
-                        <div
-                          className="
-                            dark:text-white
-                          "
-                        >
-                          {note.title}
-                        </div>
-
-                        <div className="flex gap-2">
-
-                          <button
-                            onClick={async () => {
-
-                              const data =
-                                await restoreNote(
-                                  note._id
-                                );
-
-                              fetchTrashNotes();
-                              fetchNotes();
-
-                              toast.success(
-                                data.message
-                              );
-                            }}
-                            className="
-                              bg-green-600
-                              text-white
-                              px-3
-                              py-1
-                              rounded
-                            "
-                          >
-                            Restore
-                          </button>
-
-                          <button
-                            onClick={async () => {
-
-                              const data =
-                                await permanentlyDeleteNote(
-                                  note._id
-                                );
-
-                              fetchTrashNotes();
-
-                              toast.success(
-                                data.message
-                              );
-                            }}
-                            className="
-                              bg-red-600
-                              text-white
-                              px-3
-                              py-1
-                              rounded
-                            "
-                          >
-                            Delete Forever
-                          </button>
-
-                        </div>
-
-                      </div>
-
-                    )
-                  )
-
-                )
-              }
-
-            </div>
-
-          )
-        }
-
-        {
-          notesLoading ? (
-
-            <div
-              className="
-                text-center
-                py-20
-                dark:text-white
-              "
-            >
-              Loading Notes...
-            </div>
-
-          ) : filteredNotes.length === 0 ? (
-
-            <div
-              className="
-                bg-white
-                dark:bg-slate-800
-                rounded-3xl
-                shadow-lg
-                border
-                border-slate-200
-                dark:border-slate-700
                 p-16
                 text-center
-                animate-fadeIn
               "
             >
 
               <div className="text-6xl mb-6">
-                📝
+                🚀
               </div>
 
               <h2
                 className="
-                  text-4xl
+                  text-3xl
                   font-bold
                   mb-4
                   dark:text-white
                 "
               >
-                No Notes Yet
+                No Workspace Selected
               </h2>
 
               <p
                 className="
                   text-gray-500
                   dark:text-gray-400
-                  text-lg
                 "
               >
-                Create your first note and
-                start organizing your ideas 🚀
+                Create a workspace or join one using an invite code to start managing notes.
               </p>
 
             </div>
 
-          ) : (
+            ) : (
 
-            <div
-              className="
-                grid
-                grid-cols-1
-                md:grid-cols-2
-                lg:grid-cols-3
-                gap-6
-              "
-            >
+            <>
 
-              {
-                filteredNotes.map(
-                  (note) => (
+              <div
+                className="
+                  bg-white
+                  dark:bg-slate-800
+                  p-6
+                  rounded-2xl
+                  shadow-md
+                  mb-6
+                "
+              >
 
-                    <NoteCard
-                      key={note._id}
-                      note={note}
-                      setSelectedNote={
-                        setSelectedNote
+                <h2
+                  className="
+                    text-2xl
+                    font-bold
+                    mb-4
+                    dark:text-white
+                  "
+                >
+                  Members
+                </h2>
+
+                {
+                  membersLoading ? (
+
+                    <div
+                      className="
+                        dark:text-white
+                      "
+                    >
+                      Loading Members...
+                    </div>
+
+                  ) : (
+
+                    <div className="space-y-4">
+
+                      {
+                        members.map(
+                          (member) => {
+
+                            const isOwner =
+                              member.role === "owner";
+
+                            return (
+
+                              <div
+                                key={member._id}
+                                className="
+                                  flex
+                                  flex-col
+                                  md:flex-row
+                                  md:items-center
+                                  md:justify-between
+                                  gap-3
+                                  border-b
+                                  pb-3
+                                "
+                              >
+
+                                <div>
+
+                                  <div
+                                    className="
+                                      font-semibold
+                                      dark:text-white
+                                    "
+                                  >
+                                    {member.user.name}
+                                  </div>
+
+                                  <div
+                                    className="
+                                      text-sm
+                                      text-gray-500
+                                    "
+                                  >
+                                    {member.user.email}
+                                  </div>
+
+                                </div>
+
+                                <div
+                                  className="
+                                    flex
+                                    gap-2
+                                    items-center
+                                  "
+                                >
+
+                                  <select
+                                    disabled={isOwner}
+                                    value={member.role}
+                                    onChange={async (e) => {
+
+                                      try {
+
+                                        await changeMemberRole(
+                                          selectedWorkspace._id,
+                                          member.user._id,
+                                          e.target.value
+                                        );
+
+                                        fetchMembers();
+
+                                        toast.success(
+                                          "Role Updated"
+                                        );
+
+                                      } catch (error) {
+
+                                        toast.error(
+                                          error.response?.data?.message
+                                          ||
+                                          "Update failed"
+                                        );
+                                      }
+                                    }}
+                                    className="
+                                      border
+                                      rounded-lg
+                                      px-3
+                                      py-2
+                                    "
+                                  >
+
+                                    <option value="viewer">
+                                      Viewer
+                                    </option>
+
+                                    <option value="editor">
+                                      Editor
+                                    </option>
+
+                                  </select>
+
+                                  <button
+                                    disabled={isOwner}
+                                    onClick={async () => {
+
+                                      try {
+
+                                        await removeMember(
+                                          selectedWorkspace._id,
+                                          member.user._id
+                                        );
+
+                                        fetchMembers();
+
+                                        toast.success(
+                                          "Member Removed"
+                                        );
+
+                                      } catch (error) {
+
+                                        toast.error(
+                                          error.response?.data?.message
+                                          ||
+                                          "Remove failed"
+                                        );
+                                      }
+                                    }}
+                                    className="
+                                      bg-red-500
+                                      text-white
+                                      px-4
+                                      py-2
+                                      rounded-lg
+                                    "
+                                  >
+                                    Remove
+                                  </button>
+
+                                </div>
+
+                              </div>
+
+                            );
+
+                          }
+                        )
                       }
-                      togglePin={togglePin}
-                      editHandler={
-                        editHandler
-                      }
-                      deleteNote={
-                        deleteNote
-                      }
-                    />
+
+                    </div>
 
                   )
+                }
+
+              </div>
+
+              <div
+                className="
+                  bg-white
+                  dark:bg-slate-800
+                  p-6
+                  rounded-2xl
+                  shadow-md
+                  mb-6
+                "
+              >
+
+                <h2
+                  className="
+                    text-2xl
+                    font-bold
+                    mb-4
+                    dark:text-white
+                  "
+                >
+                  Recent Activity
+                </h2>
+
+                <div className="space-y-3">
+
+                  {
+                    activities.length === 0
+                    ? (
+                      <p
+                        className="
+                          text-gray-500
+                          dark:text-gray-400
+                        "
+                      >
+                        No activity yet
+                      </p>
+                    )
+                    : (
+                      activities
+                        .slice(0, 5)
+                        .map(
+                        (activity) => (
+
+                          <div
+                            key={activity._id}
+                            className="
+                              border-b
+                              pb-2
+                            "
+                          >
+
+                            <p
+                              className="
+                                dark:text-white
+                              "
+                            >
+
+                              <strong>
+                                {activity.user?.name}
+                              </strong>
+
+                              {" "}
+
+                              {formatActivity(activity)}
+
+                            </p>
+
+                          </div>
+
+                        )
+                      )
+                    )
+                  }
+
+                </div>
+
+              </div>
+
+              <div
+                className="
+                  bg-white
+                  dark:bg-slate-800
+                  p-6
+                  rounded-2xl
+                  shadow-md
+                  mb-10
+                "
+              >
+
+                <h2
+                  className="
+                    text-2xl
+                    font-semibold
+                    mb-4
+                    dark:text-white
+                  "
+                >
+                  {
+                    editingId
+                      ? "Update Note"
+                      : "Create Note"
+                  }
+                </h2>
+
+                <form
+                  onSubmit={
+                    editingId
+                      ? updateNote
+                      : createNote
+                  }
+                  className="
+                    flex
+                    flex-col
+                    gap-4
+                  "
+                >
+
+                  <input
+                    type="text"
+                    placeholder="Title"
+                    value={title}
+                    onChange={(e) =>
+                      setTitle(e.target.value)
+                    }
+                    className="
+                      border
+                      rounded-lg
+                      px-4
+                      py-3
+                      outline-none
+                      focus:ring-2
+                      focus:ring-blue-500
+                      dark:bg-slate-700
+                      dark:text-white
+                      dark:border-slate-600
+                    "
+                  />
+
+                  <textarea
+                    placeholder="Content"
+                    value={content}
+                    onChange={(e) =>
+                      setContent(e.target.value)
+                    }
+                    rows={10}
+                    className="
+                      border
+                      rounded-lg
+                      px-4
+                      py-3
+                      outline-none
+                      focus:ring-2
+                      focus:ring-blue-500
+                      dark:bg-slate-700
+                      dark:text-white
+                      dark:border-slate-600
+                      resize-y
+                      min-h-[250px]
+                    "
+                  />
+
+                  <select
+                    value={category}
+                    onChange={(e) =>
+                      setCategory(e.target.value)
+                    }
+                    className="
+                      border
+                      rounded-lg
+                      px-4
+                      py-3
+                      outline-none
+                      focus:ring-2
+                      focus:ring-blue-500
+                      dark:bg-slate-700
+                      dark:text-white
+                      dark:border-slate-600
+                    "
+                  >
+
+                    <option value="General">
+                      General
+                    </option>
+
+                    <option value="Work">
+                      Work
+                    </option>
+
+                    <option value="Personal">
+                      Personal
+                    </option>
+
+                    <option value="Study">
+                      Study
+                    </option>
+
+                    <option value="Ideas">
+                      Ideas
+                    </option>
+
+                    <option value="Projects">
+                      Projects
+                    </option>
+
+                  </select>
+
+                  <label
+                    className="
+                      flex
+                      flex-col
+                      items-center
+                      justify-center
+                      border-2
+                      border-dashed
+                      border-slate-300
+                      dark:border-slate-600
+                      rounded-2xl
+                      p-10
+                      cursor-pointer
+                      hover:border-blue-500
+                      hover:bg-blue-50
+                      dark:hover:bg-slate-700
+                      transition
+                      duration-300
+                      text-gray-600
+                      dark:text-gray-300
+                      font-medium
+                      animate-fadeIn
+                    "
+                  >
+
+                    <input
+                      type="file"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => {
+
+                        Array.from(
+                          e.target.files
+                        ).forEach((file) => {
+
+                          uploadFile(file);
+                        });
+                      }}
+                    />
+
+                    <div className="text-5xl mb-3">
+                      📁
+                    </div>
+
+                    <div className="text-lg font-semibold">
+                      {
+                        uploading
+                          ? "Uploading..."
+                          : "Choose Files"
+                      }
+                    </div>
+
+                    <div
+                      className="
+                        text-sm
+                        text-gray-500
+                        mt-2
+                        text-center
+                      "
+                    >
+                      Drag & drop files or click
+                      to browse
+                    </div>
+
+                  </label>
+
+                  {
+                    attachments.length > 0 && (
+
+                      <div
+                        className="
+                          mt-4
+                          flex
+                          flex-wrap
+                          gap-3
+                        "
+                      >
+
+                        {
+                          attachments.map(
+                            (file, index) => (
+
+                              <div
+                                key={index}
+                                className="
+                                  bg-slate-100
+                                  dark:bg-slate-700
+                                  px-4
+                                  py-2
+                                  rounded-xl
+                                  text-sm
+                                  dark:text-white
+                                  shadow-sm
+                                "
+                              >
+                                📎 {file.name}
+                              </div>
+
+                            )
+                          )
+                        }
+
+                      </div>
+
+                    )
+                  }
+
+                  <button
+                    type="submit"
+                    disabled={creating}
+                    className="
+                      bg-blue-600
+                      hover:bg-blue-700
+                      active:scale-95
+                      focus:ring-2
+                      focus:ring-blue-500
+                      focus:outline-none
+                      text-white
+                      py-3
+                      rounded-lg
+                      font-semibold
+                      disabled:opacity-50
+                    "
+                  >
+                    {
+                      creating
+                        ? "Saving..."
+                        : (
+                            editingId
+                              ? "Update Note"
+                              : "Create Note"
+                          )
+                    }
+                  </button>
+
+                </form>
+
+              </div>
+
+              <SearchBar
+                search={search}
+                setSearch={setSearch}
+              />
+
+              <CategoryFilters
+                selectedCategory={
+                  selectedCategory
+                }
+                setSelectedCategory={
+                  setSelectedCategory
+                }
+              />
+
+              <button
+                onClick={() =>
+                  setShowTrash(
+                    !showTrash
+                  )
+                }
+                className="
+                  bg-slate-700
+                  text-white
+                  px-4
+                  py-2
+                  rounded-lg
+                  mb-4
+                "
+              >
+                {
+                  showTrash
+                    ? "Show Notes"
+                    : "Open Trash"
+                }
+              </button>
+
+              {
+                showTrash && (
+
+                  <div
+                    className="
+                      bg-white
+                      dark:bg-slate-800
+                      rounded-2xl
+                      shadow-md
+                      p-6
+                      mb-6
+                    "
+                  >
+
+                    <h2
+                      className="
+                        text-2xl
+                        font-bold
+                        mb-4
+                        dark:text-white
+                      "
+                    >
+                      Trash
+                    </h2>
+
+                    {
+                      trashNotes.length === 0 ? (
+
+                        <div
+                          className="
+                            text-gray-500
+                            dark:text-gray-400
+                          "
+                        >
+                          Trash is empty
+                        </div>
+
+                      ) : (
+
+                        trashNotes.map(
+                          (note) => (
+
+                            <div
+                              key={note._id}
+                              className="
+                                border-b
+                                py-4
+                                flex
+                                justify-between
+                                items-center
+                              "
+                            >
+
+                              <div
+                                className="
+                                  dark:text-white
+                                "
+                              >
+                                {note.title}
+                              </div>
+
+                              <div className="flex gap-2">
+
+                                <button
+                                  onClick={async () => {
+
+                                    const data =
+                                      await restoreNote(
+                                        note._id
+                                      );
+
+                                    fetchTrashNotes();
+                                    fetchNotes();
+
+                                    toast.success(
+                                      data.message
+                                    );
+                                  }}
+                                  className="
+                                    bg-green-600
+                                    text-white
+                                    px-3
+                                    py-1
+                                    rounded
+                                  "
+                                >
+                                  Restore
+                                </button>
+
+                                <button
+                                  onClick={async () => {
+
+                                    const data =
+                                      await permanentlyDeleteNote(
+                                        note._id
+                                      );
+
+                                    fetchTrashNotes();
+
+                                    toast.success(
+                                      data.message
+                                    );
+                                  }}
+                                  className="
+                                    bg-red-600
+                                    text-white
+                                    px-3
+                                    py-1
+                                    rounded
+                                  "
+                                >
+                                  Delete Forever
+                                </button>
+
+                              </div>
+
+                            </div>
+
+                          )
+                        )
+
+                      )
+                    }
+
+                  </div>
+
                 )
               }
 
-            </div>
+              {
+                notesLoading ? (
+
+                  <div
+                    className="
+                      text-center
+                      py-20
+                      dark:text-white
+                    "
+                  >
+                    Loading Notes...
+                  </div>
+
+                ) : filteredNotes.length === 0 ? (
+
+                  <div
+                    className="
+                      bg-white
+                      dark:bg-slate-800
+                      rounded-3xl
+                      shadow-lg
+                      border
+                      border-slate-200
+                      dark:border-slate-700
+                      p-16
+                      text-center
+                      animate-fadeIn
+                    "
+                  >
+
+                    <div className="text-6xl mb-6">
+                      📝
+                    </div>
+
+                    <h2
+                      className="
+                        text-4xl
+                        font-bold
+                        mb-4
+                        dark:text-white
+                      "
+                    >
+                      No Notes Yet
+                    </h2>
+
+                    <p
+                      className="
+                        text-gray-500
+                        dark:text-gray-400
+                        text-lg
+                      "
+                    >
+                      Create your first note and
+                      start organizing your ideas 🚀
+                    </p>
+
+                  </div>
+
+                ) : (
+
+                  <div
+                    className="
+                      grid
+                      grid-cols-1
+                      md:grid-cols-2
+                      lg:grid-cols-3
+                      gap-6
+                    "
+                  >
+
+                    {
+                      filteredNotes.map(
+                        (note) => (
+
+                          <NoteCard
+                            key={note._id}
+                            note={note}
+                            setSelectedNote={
+                              setSelectedNote
+                            }
+                            togglePin={togglePin}
+                            editHandler={
+                              editHandler
+                            }
+                            deleteNote={
+                              deleteNote
+                            }
+                          />
+
+                        )
+                      )
+                    }
+
+                  </div>
+
+                )
+              }
+
+            </>
 
           )
         }
