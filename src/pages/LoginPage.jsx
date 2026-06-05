@@ -38,6 +38,11 @@ function LoginPage() {
         data.token
       );
 
+      localStorage.setItem(
+        "user",
+        JSON.stringify(data)
+      );
+
       toast.success("Login Successful");
 
       navigate("/dashboard");

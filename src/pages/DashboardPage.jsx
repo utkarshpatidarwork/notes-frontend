@@ -165,6 +165,8 @@ function DashboardPage() {
 
     localStorage.removeItem("token");
 
+    localStorage.removeItem("user");
+
     navigate("/");
   };
 
@@ -945,13 +947,12 @@ function DashboardPage() {
                           workspace._id
                           && (
 
-                           members.some(
-                            (member) =>
-                              member.user._id
-                              ===
-                              reqUserId
-                              &&
-                              member.role === "owner"
+                           String(
+                            workspace.owner
+                          )
+                          ===
+                          String(
+                            reqUserId
                           )
 
                             ? (
