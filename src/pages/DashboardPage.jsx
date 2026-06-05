@@ -945,12 +945,13 @@ function DashboardPage() {
                           workspace._id
                           && (
 
-                           String(
-                            workspace.owner
-                          )
-                          ===
-                          String(
-                            reqUserId
+                           members.some(
+                            (member) =>
+                              member.user._id
+                              ===
+                              reqUserId
+                              &&
+                              member.role === "owner"
                           )
 
                             ? (
