@@ -1,3 +1,4 @@
+//activityService.js
 import axios from "axios";
 
 const API_URL =
@@ -6,15 +7,15 @@ const API_URL =
 export const getActivities =
   async (workspaceId) => {
 
-    const user =
-      JSON.parse(
-        localStorage.getItem("user")
+    const token =
+      localStorage.getItem(
+        "token"
       );
 
     const config = {
       headers: {
         Authorization:
-          `Bearer ${user.token}`
+          `Bearer ${token}`
       }
     };
 
