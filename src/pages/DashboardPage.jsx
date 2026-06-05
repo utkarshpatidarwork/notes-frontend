@@ -565,11 +565,15 @@ function DashboardPage() {
 
     try {
 
-      await deleteNoteService(id);
+      const data =
+        await deleteNoteService(id);
 
       fetchNotes();
+      fetchTrashNotes();
 
-      toast.success("Note Deleted");
+      toast.success(
+        data.message
+      );
 
     } catch (error) {
 
@@ -637,6 +641,15 @@ function DashboardPage() {
 
         case "NOTE_UPDATED":
           return `updated note "${activity.target}"`;
+
+        case "NOTE_ARCHIVED":
+          return `archived note "${activity.target}"`;
+
+        case "NOTE_RESTORED":
+          return `restored note "${activity.target}"`;
+
+        case "NOTE_PERMANENTLY_DELETED":
+          return `permanently deleted note "${activity.target}"`;
 
         case "NOTE_DELETED":
           return `deleted note "${activity.target}"`;
@@ -1530,13 +1543,17 @@ function DashboardPage() {
                           <button
                             onClick={async () => {
 
-                              await restoreNote(
-                                note._id
-                              );
+                              const data =
+                                await restoreNote(
+                                  note._id
+                                );
 
                               fetchTrashNotes();
-
                               fetchNotes();
+
+                              toast.success(
+                                data.message
+                              );
                             }}
                             className="
                               bg-green-600
@@ -1552,11 +1569,16 @@ function DashboardPage() {
                           <button
                             onClick={async () => {
 
-                              await permanentlyDeleteNote(
-                                note._id
-                              );
+                              const data =
+                                await permanentlyDeleteNote(
+                                  note._id
+                                );
 
                               fetchTrashNotes();
+
+                              toast.success(
+                                data.message
+                              );
                             }}
                             className="
                               bg-red-600
