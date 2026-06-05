@@ -21,7 +21,8 @@ import {
   getWorkspaceMembers,
   changeMemberRole,
   removeMember,
-  leaveWorkspace
+  leaveWorkspace,
+  deleteWorkspace
 } from "../services/workspaceService";
 
 import {
@@ -913,62 +914,123 @@ function DashboardPage() {
 
                         {
                           selectedWorkspace?._id
-                          === workspace._id
-                          &&
-                          workspace.owner
-                          !==
-                          JSON.parse(
-                            localStorage.getItem(
-                              "user"
-                            )
-                          )?._id
+                          ===
+                          workspace._id
                           && (
 
-                            <button
-                              onClick={async () => {
+                            workspace.owner
+                            ===
+                            JSON.parse(
+                              localStorage.getItem(
+                                "user"
+                              )
+                            )?._id
 
-                                try {
+                            ? (
 
-                                  const data =
-                                    await leaveWorkspace(
-                                      workspace._id
+                              <button
+                                onClick={async () => {
+
+                                  if (
+                                    !window.confirm(
+                                      "Delete this workspace and all its notes?"
+                                    )
+                                  ) {
+                                    return;
+                                  }
+
+                                  try {
+
+                                    const data =
+                                      await deleteWorkspace(
+                                        workspace._id
+                                      );
+
+                                    toast.success(
+                                      data.message
                                     );
 
-                                  toast.success(
-                                    data.message
-                                  );
+                                    localStorage.removeItem(
+                                      "selectedWorkspace"
+                                    );
 
-                                  localStorage.removeItem(
-                                    "selectedWorkspace"
-                                  );
+                                    setSelectedWorkspace(
+                                      null
+                                    );
 
-                                  setSelectedWorkspace(
-                                    null
-                                  );
+                                    await fetchWorkspaces();
 
-                                  fetchWorkspaces();
+                                  } catch (error) {
 
-                                } catch (error) {
+                                    toast.error(
+                                      error.response?.data?.message
+                                      ||
+                                      "Delete failed"
+                                    );
+                                  }
+                                }}
+                                className="
+                                  mt-2
+                                  bg-red-700
+                                  text-white
+                                  px-3
+                                  py-1
+                                  rounded-lg
+                                  text-xs
+                                "
+                              >
+                                Delete Workspace
+                              </button>
 
-                                  toast.error(
-                                    error.response?.data?.message
-                                    ||
-                                    "Failed to leave workspace"
-                                  );
-                                }
-                              }}
-                              className="
-                                mt-2
-                                bg-red-500
-                                text-white
-                                px-3
-                                py-1
-                                rounded-lg
-                                text-xs
-                              "
-                            >
-                              Leave
-                            </button>
+                            ) : (
+
+                              <button
+                                onClick={async () => {
+
+                                  try {
+
+                                    const data =
+                                      await leaveWorkspace(
+                                        workspace._id
+                                      );
+
+                                    toast.success(
+                                      data.message
+                                    );
+
+                                    localStorage.removeItem(
+                                      "selectedWorkspace"
+                                    );
+
+                                    setSelectedWorkspace(
+                                      null
+                                    );
+
+                                    await fetchWorkspaces();
+
+                                  } catch (error) {
+
+                                    toast.error(
+                                      error.response?.data?.message
+                                      ||
+                                      "Failed to leave workspace"
+                                    );
+                                  }
+                                }}
+                                className="
+                                  mt-2
+                                  bg-red-500
+                                  text-white
+                                  px-3
+                                  py-1
+                                  rounded-lg
+                                  text-xs
+                                "
+                              >
+                                Leave
+                              </button>
+
+                            )
 
                           )
                         }

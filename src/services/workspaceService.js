@@ -100,3 +100,14 @@ export const leaveWorkspace =
 
     return data;
   };
+
+export const deleteWorkspace =
+  async (workspaceId) => {
+
+    const { data } =
+      await api.delete(
+        `/api/workspaces/${workspaceId}`
+      );
+
+    return data;
+  };
