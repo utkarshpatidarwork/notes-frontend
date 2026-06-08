@@ -1269,6 +1269,7 @@ function DashboardPage() {
                                   String(selectedWorkspace?.owner)
                                   ===
                                   String(reqUserId)
+                                  && !isOwner
                                   && (
 
                                     <div
