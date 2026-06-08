@@ -894,13 +894,23 @@ function DashboardPage() {
 
                 try {
 
-                  await createWorkspace(
-                    workspaceName
-                  );
+                  const workspace =
+                    await createWorkspace(
+                      workspaceName
+                    );
 
                   setWorkspaceName("");
 
-                  fetchWorkspaces();
+                  setWorkspaces(
+                    (prev) => [
+                      ...prev,
+                      workspace
+                    ]
+                  );
+
+                  setSelectedWorkspace(
+                    workspace
+                  );
 
                   toast.success(
                     "Workspace Created"
@@ -953,13 +963,23 @@ function DashboardPage() {
 
                 try {
 
-                  await joinWorkspace(
-                    inviteCode
-                  );
+                  const workspace =
+                    await joinWorkspace(
+                      inviteCode
+                    );
 
                   setInviteCode("");
 
-                  fetchWorkspaces();
+                  setWorkspaces(
+                    (prev) => [
+                      ...prev,
+                      workspace
+                    ]
+                  );
+
+                  setSelectedWorkspace(
+                    workspace
+                  );
 
                   toast.success(
                     "Joined Workspace"
