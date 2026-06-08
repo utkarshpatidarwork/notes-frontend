@@ -395,28 +395,30 @@ function DashboardPage() {
         memberId
       }) => {
 
+        await fetchWorkspaces();
+
         if (
           String(memberId)
           ===
           String(reqUserId)
+          &&
+          selectedWorkspace?._id
+          ===
+          workspaceId
         ) {
 
-          if (
-            selectedWorkspace?._id
-            ===
-            workspaceId
-          ) {
+          localStorage.removeItem(
+            "selectedWorkspace"
+          );
 
-            localStorage.removeItem(
-              "selectedWorkspace"
-            );
+          setSelectedWorkspace(
+            null
+          );
 
-            setSelectedWorkspace(
-              null
-            );
-          }
-
-          await fetchWorkspaces();
+          setNotes([]);
+          setMembers([]);
+          setActivities([]);
+          setTrashNotes([]);
         }
       }
     );
