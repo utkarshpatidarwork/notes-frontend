@@ -1265,98 +1265,107 @@ function DashboardPage() {
 
                                 </div>
 
-                                <div
-                                  className="
-                                    flex
-                                    gap-2
-                                    items-center
-                                  "
-                                >
+                                {
+                                  String(selectedWorkspace?.owner)
+                                  ===
+                                  String(reqUserId)
+                                  && (
 
-                                  <select
-                                    disabled={isOwner}
-                                    value={member.role}
-                                    onChange={async (e) => {
+                                    <div
+                                      className="
+                                        flex
+                                        gap-2
+                                        items-center
+                                      "
+                                    >
 
-                                      try {
+                                      <select
+                                        disabled={isOwner}
+                                        value={member.role}
+                                        onChange={async (e) => {
 
-                                        await changeMemberRole(
-                                          selectedWorkspace._id,
-                                          member.user._id,
-                                          e.target.value
-                                        );
+                                          try {
 
-                                        fetchMembers();
+                                            await changeMemberRole(
+                                              selectedWorkspace._id,
+                                              member.user._id,
+                                              e.target.value
+                                            );
 
-                                        toast.success(
-                                          "Role Updated"
-                                        );
+                                            fetchMembers();
 
-                                      } catch (error) {
+                                            toast.success(
+                                              "Role Updated"
+                                            );
 
-                                        toast.error(
-                                          error.response?.data?.message
-                                          ||
-                                          "Update failed"
-                                        );
-                                      }
-                                    }}
-                                    className="
-                                      border
-                                      rounded-lg
-                                      px-3
-                                      py-2
-                                    "
-                                  >
+                                          } catch (error) {
 
-                                    <option value="viewer">
-                                      Viewer
-                                    </option>
+                                            toast.error(
+                                              error.response?.data?.message
+                                              ||
+                                              "Update failed"
+                                            );
+                                          }
+                                        }}
+                                        className="
+                                          border
+                                          rounded-lg
+                                          px-3
+                                          py-2
+                                        "
+                                      >
 
-                                    <option value="editor">
-                                      Editor
-                                    </option>
+                                        <option value="viewer">
+                                          Viewer
+                                        </option>
 
-                                  </select>
+                                        <option value="editor">
+                                          Editor
+                                        </option>
 
-                                  <button
-                                    disabled={isOwner}
-                                    onClick={async () => {
+                                      </select>
 
-                                      try {
+                                      <button
+                                        disabled={isOwner}
+                                        onClick={async () => {
 
-                                        await removeMember(
-                                          selectedWorkspace._id,
-                                          member.user._id
-                                        );
+                                          try {
 
-                                        fetchMembers();
+                                            await removeMember(
+                                              selectedWorkspace._id,
+                                              member.user._id
+                                            );
 
-                                        toast.success(
-                                          "Member Removed"
-                                        );
+                                            fetchMembers();
 
-                                      } catch (error) {
+                                            toast.success(
+                                              "Member Removed"
+                                            );
 
-                                        toast.error(
-                                          error.response?.data?.message
-                                          ||
-                                          "Remove failed"
-                                        );
-                                      }
-                                    }}
-                                    className="
-                                      bg-red-500
-                                      text-white
-                                      px-4
-                                      py-2
-                                      rounded-lg
-                                    "
-                                  >
-                                    Remove
-                                  </button>
+                                          } catch (error) {
 
-                                </div>
+                                            toast.error(
+                                              error.response?.data?.message
+                                              ||
+                                              "Remove failed"
+                                            );
+                                          }
+                                        }}
+                                        className="
+                                          bg-red-500
+                                          text-white
+                                          px-4
+                                          py-2
+                                          rounded-lg
+                                        "
+                                      >
+                                        Remove
+                                      </button>
+
+                                    </div>
+
+                                  )
+                                }
 
                               </div>
 
