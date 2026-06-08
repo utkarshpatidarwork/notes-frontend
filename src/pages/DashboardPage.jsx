@@ -1764,9 +1764,37 @@ function DashboardPage() {
                                   text-sm
                                   dark:text-white
                                   shadow-sm
+                                  flex
+                                  items-center
+                                  gap-2
                                 "
                               >
-                                📎 {file.name}
+
+                                <span>
+                                  📎 {file.name}
+                                </span>
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+
+                                    setAttachments(
+                                      attachments.filter(
+                                        (_, i) =>
+                                          i !== index
+                                      )
+                                    );
+                                  }}
+                                  className="
+                                    text-red-500
+                                    font-bold
+                                    hover:text-red-700
+                                    ml-1
+                                  "
+                                >
+                                  ✕
+                                </button>
+
                               </div>
 
                             )
