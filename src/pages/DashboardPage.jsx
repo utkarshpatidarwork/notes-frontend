@@ -377,6 +377,13 @@ function DashboardPage() {
       () => {
 
         fetchMembers();
+      }
+    );
+
+    socket.on(
+      "activityUpdated",
+      () => {
+
         fetchActivities();
       }
     );
@@ -409,6 +416,8 @@ function DashboardPage() {
       socket.off("notesUpdated");
 
       socket.off("membersUpdated");
+
+      socket.off("activityUpdated");
 
       socket.off("workspaceDeleted");
 
@@ -903,6 +912,8 @@ function DashboardPage() {
                 } catch (error) {
 
                   toast.error(
+                    error.response?.data?.message
+                    ||
                     "Join failed"
                   );
                 }
