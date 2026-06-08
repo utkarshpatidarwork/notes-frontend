@@ -389,6 +389,39 @@ function DashboardPage() {
     );
 
     socket.on(
+      "memberRemoved",
+      async ({
+        workspaceId,
+        memberId
+      }) => {
+
+        if (
+          String(memberId)
+          ===
+          String(reqUserId)
+        ) {
+
+          if (
+            selectedWorkspace?._id
+            ===
+            workspaceId
+          ) {
+
+            localStorage.removeItem(
+              "selectedWorkspace"
+            );
+
+            setSelectedWorkspace(
+              null
+            );
+          }
+
+          await fetchWorkspaces();
+        }
+      }
+    );
+
+    socket.on(
       "workspaceDeleted",
       async (workspaceId) => {
 
@@ -418,6 +451,8 @@ function DashboardPage() {
       socket.off("membersUpdated");
 
       socket.off("activityUpdated");
+
+      socket.off("memberRemoved");
 
       socket.off("workspaceDeleted");
 
