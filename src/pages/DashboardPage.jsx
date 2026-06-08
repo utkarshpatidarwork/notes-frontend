@@ -178,6 +178,15 @@ function DashboardPage() {
 
         if (data.length > 0) {
 
+          const currentWorkspace =
+            selectedWorkspace
+              ? data.find(
+                  (workspace) =>
+                    workspace._id ===
+                    selectedWorkspace._id
+                )
+              : null;
+
           const savedId =
             localStorage.getItem(
               "selectedWorkspace"
@@ -193,7 +202,10 @@ function DashboardPage() {
               : null;
 
           setSelectedWorkspace(
-            savedWorkspace ||
+            currentWorkspace
+            ||
+            savedWorkspace
+            ||
             data[0]
           );
         } else {
