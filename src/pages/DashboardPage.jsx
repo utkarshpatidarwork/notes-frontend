@@ -373,6 +373,15 @@ function DashboardPage() {
     );
 
     socket.on(
+      "membersUpdated",
+      () => {
+
+        fetchMembers();
+        fetchActivities();
+      }
+    );
+
+    socket.on(
       "workspaceDeleted",
       async (workspaceId) => {
 
@@ -398,6 +407,8 @@ function DashboardPage() {
     return () => {
 
       socket.off("notesUpdated");
+
+      socket.off("membersUpdated");
 
       socket.off("workspaceDeleted");
 
