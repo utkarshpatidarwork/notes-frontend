@@ -606,10 +606,7 @@ function DashboardPage() {
           selectedWorkspace?._id
       });
 
-      setTitle("");
-      setContent("");
-      setAttachments([]);
-      setCategory("General");
+      clearNoteForm();
 
       fetchNotes();
 
@@ -649,11 +646,7 @@ function DashboardPage() {
         }
       );
 
-      setTitle("");
-      setContent("");
-      setAttachments([]);
-      setCategory("General");
-      setEditingId(null);
+      clearNoteForm();
 
       fetchNotes();
 
@@ -743,6 +736,19 @@ function DashboardPage() {
       ?.scrollIntoView({
         behavior: "smooth"
       });
+  };
+
+  const clearNoteForm = () => {
+
+    setTitle("");
+
+    setContent("");
+
+    setAttachments([]);
+
+    setCategory("General");
+
+    setEditingId(null);
   };
 
   const filteredNotes = notes.filter(
@@ -1772,33 +1778,59 @@ function DashboardPage() {
                     )
                   }
 
-                  <button
-                    type="submit"
-                    disabled={creating}
+                  <div
                     className="
-                      bg-blue-600
-                      hover:bg-blue-700
-                      active:scale-95
-                      focus:ring-2
-                      focus:ring-blue-500
-                      focus:outline-none
-                      text-white
-                      py-3
-                      rounded-lg
-                      font-semibold
-                      disabled:opacity-50
+                      flex
+                      gap-3
                     "
                   >
-                    {
-                      creating
-                        ? "Saving..."
-                        : (
-                            editingId
-                              ? "Update Note"
-                              : "Create Note"
-                          )
-                    }
-                  </button>
+
+                    <button
+                      type="submit"
+                      disabled={creating}
+                      className="
+                        flex-1
+                        bg-blue-600
+                        hover:bg-blue-700
+                        active:scale-95
+                        focus:ring-2
+                        focus:ring-blue-500
+                        focus:outline-none
+                        text-white
+                        py-3
+                        rounded-lg
+                        font-semibold
+                        disabled:opacity-50
+                      "
+                    >
+                      {
+                        creating
+                          ? "Saving..."
+                          : (
+                              editingId
+                                ? "Update Note"
+                                : "Create Note"
+                            )
+                      }
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={clearNoteForm}
+                      className="
+                        px-6
+                        py-3
+                        rounded-lg
+                        border
+                        border-slate-300
+                        dark:border-slate-600
+                        dark:text-white
+                      "
+                    >
+                      Clear
+                    </button>
+
+                  </div>
 
                 </form>
 
