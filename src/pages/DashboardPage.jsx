@@ -407,17 +407,16 @@ function DashboardPage() {
         memberId
       }) => {
 
-        await fetchWorkspaces();
-
         if (
           String(memberId)
           ===
           String(reqUserId)
-          &&
-          selectedWorkspace?._id
-          ===
-          workspaceId
         ) {
+
+          socket.emit(
+            "leaveWorkspace",
+            workspaceId
+          );
 
           localStorage.removeItem(
             "selectedWorkspace"
@@ -432,6 +431,8 @@ function DashboardPage() {
           setActivities([]);
           setTrashNotes([]);
         }
+
+        await fetchWorkspaces();
       }
     );
 
