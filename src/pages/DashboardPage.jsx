@@ -1243,24 +1243,51 @@ function DashboardPage() {
                                 "
                               >
 
-                                <div>
+                                <div
+                                  className="
+                                    flex
+                                    justify-between
+                                    items-center
+                                    flex-1
+                                  "
+                                >
 
-                                  <div
-                                    className="
-                                      font-semibold
-                                      dark:text-white
-                                    "
-                                  >
-                                    {member.user.name}
+                                  <div>
+
+                                    <div
+                                      className="
+                                        font-semibold
+                                        dark:text-white
+                                      "
+                                    >
+                                      {member.user.name}
+                                    </div>
+
+                                    <div
+                                      className="
+                                        text-sm
+                                        text-gray-500
+                                      "
+                                    >
+                                      {member.user.email}
+                                    </div>
+
                                   </div>
 
                                   <div
                                     className="
-                                      text-sm
-                                      text-gray-500
+                                      px-3
+                                      py-1
+                                      rounded-full
+                                      text-xs
+                                      font-semibold
+                                      bg-slate-200
+                                      dark:bg-slate-700
+                                      dark:text-white
+                                      capitalize
                                     "
                                   >
-                                    {member.user.email}
+                                    {member.role}
                                   </div>
 
                                 </div>
