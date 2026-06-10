@@ -35,3 +35,39 @@ export const registerUser =
 
     return data;
   };
+
+export const updateProfile =
+  async (
+    name,
+    email
+  ) => {
+
+    const { data } =
+      await api.put(
+        "/api/users/profile",
+        {
+          name,
+          email
+        }
+      );
+
+    return data;
+  };
+
+export const changePassword =
+  async (
+    currentPassword,
+    newPassword
+  ) => {
+
+    const { data } =
+      await api.put(
+        "/api/users/change-password",
+        {
+          currentPassword,
+          newPassword
+        }
+      );
+
+    return data;
+  };
