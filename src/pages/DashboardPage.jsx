@@ -1546,10 +1546,6 @@ function DashboardPage() {
                                                     member.user._id
                                                   );
 
-                                                  await fetchMembers();
-
-                                                  await fetchWorkspaces();
-
                                                   toast.success(
                                                     data.message
                                                   );
