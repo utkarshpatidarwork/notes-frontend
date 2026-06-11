@@ -22,7 +22,9 @@ import {
   changeMemberRole,
   removeMember,
   leaveWorkspace,
-  deleteWorkspace
+  deleteWorkspace,
+  transferOwnership,
+  renameWorkspace
 } from "../services/workspaceService";
 
 import {
@@ -30,11 +32,6 @@ import {
 } from "../services/uploadService";
 
 import { getActivities } from "../services/activityService";
-
-import {
-  updateProfile,
-  changePassword
-} from "../services/authService";
 
 import toast from "react-hot-toast";
 
@@ -104,6 +101,11 @@ function DashboardPage() {
   const [workspaceName, setWorkspaceName] =
     useState("");
 
+  const [
+    renameWorkspaceName,
+    setRenameWorkspaceName
+  ] = useState("");
+
   const [selectedWorkspace, setSelectedWorkspace] =
     useState(() => {
 
@@ -150,26 +152,6 @@ function DashboardPage() {
 
   const reqUserId =
     currentUser?._id;
-
-  const [profileName, setProfileName] =
-    useState(
-      currentUser?.name || ""
-    );
-
-  const [profileEmail, setProfileEmail] =
-    useState(
-      currentUser?.email || ""
-    );
-
-  const [
-    currentPassword,
-    setCurrentPassword
-  ] = useState("");
-
-  const [
-    newPassword,
-    setNewPassword
-  ] = useState("");
 
   const navigate = useNavigate();
 
@@ -226,13 +208,17 @@ function DashboardPage() {
                 )
               : null;
 
-          setSelectedWorkspace(
+          const updatedWorkspace =
             currentWorkspace
             ||
             savedWorkspace
             ||
-            data[0]
+            data[0];
+
+          setSelectedWorkspace(
+            updatedWorkspace
           );
+
         } else {
 
           setSelectedWorkspace(
@@ -411,9 +397,11 @@ function DashboardPage() {
 
     socket.on(
       "membersUpdated",
-      () => {
+      async () => {
 
-        fetchMembers();
+        await fetchMembers();
+
+        await fetchWorkspaces();
       }
     );
 
@@ -462,6 +450,14 @@ function DashboardPage() {
     );
 
     socket.on(
+      "workspaceRenamed",
+      async () => {
+
+        await fetchWorkspaces();
+      }
+    );
+
+    socket.on(
       "workspaceDeleted",
       async (workspaceId) => {
 
@@ -493,6 +489,8 @@ function DashboardPage() {
       socket.off("activityUpdated");
 
       socket.off("memberRemoved");
+
+      socket.off("workspaceRenamed");
 
       socket.off("workspaceDeleted");
 
@@ -763,72 +761,6 @@ function DashboardPage() {
       });
   };
 
-  const updateProfileHandler =
-    async () => {
-
-      try {
-
-        const data =
-          await updateProfile(
-            profileName,
-            profileEmail
-          );
-
-        const updatedUser = {
-          ...currentUser,
-          name: data.name,
-          email: data.email
-        };
-
-        localStorage.setItem(
-          "user",
-          JSON.stringify(
-            updatedUser
-          )
-        );
-
-        toast.success(
-          "Profile updated"
-        );
-
-      } catch (error) {
-
-        toast.error(
-          error.response?.data?.message
-          ||
-          "Profile update failed"
-        );
-      }
-    };
-
-  const changePasswordHandler =
-    async () => {
-
-      try {
-
-        const data =
-          await changePassword(
-            currentPassword,
-            newPassword
-          );
-
-        setCurrentPassword("");
-        setNewPassword("");
-
-        toast.success(
-          data.message
-        );
-
-      } catch (error) {
-
-        toast.error(
-          error.response?.data?.message
-          ||
-          "Password change failed"
-        );
-      }
-    };
-
   const clearNoteForm = () => {
 
     setTitle("");
@@ -935,188 +867,6 @@ function DashboardPage() {
           p-4 md:p-6
         "
       >
-
-        <div
-          className="
-            bg-white
-            dark:bg-slate-800
-            p-6
-            rounded-2xl
-            shadow-md
-            mb-6
-          "
-        >
-
-          <h2
-            className="
-              text-2xl
-              font-bold
-              mb-6
-              dark:text-white
-            "
-          >
-            Account Settings
-          </h2>
-
-          <div
-            className="
-              grid
-              md:grid-cols-2
-              gap-6
-            "
-          >
-
-            <div>
-
-              <h3
-                className="
-                  font-semibold
-                  mb-4
-                  dark:text-white
-                "
-              >
-                Update Profile
-              </h3>
-
-              <div className="space-y-3">
-
-                <input
-                  type="text"
-                  placeholder="Name"
-                  value={profileName}
-                  onChange={(e) =>
-                    setProfileName(
-                      e.target.value
-                    )
-                  }
-                  className="
-                    w-full
-                    border
-                    rounded-lg
-                    px-4
-                    py-3
-                    dark:bg-slate-700
-                    dark:text-white
-                  "
-                />
-
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={profileEmail}
-                  onChange={(e) =>
-                    setProfileEmail(
-                      e.target.value
-                    )
-                  }
-                  className="
-                    w-full
-                    border
-                    rounded-lg
-                    px-4
-                    py-3
-                    dark:bg-slate-700
-                    dark:text-white
-                  "
-                />
-
-                <button
-                  onClick={
-                    updateProfileHandler
-                  }
-                  className="
-                    bg-blue-600
-                    hover:bg-blue-700
-                    text-white
-                    px-5
-                    py-3
-                    rounded-lg
-                  "
-                >
-                  Update Profile
-                </button>
-
-              </div>
-
-            </div>
-
-            <div>
-
-              <h3
-                className="
-                  font-semibold
-                  mb-4
-                  dark:text-white
-                "
-              >
-                Change Password
-              </h3>
-
-              <div className="space-y-3">
-
-                <input
-                  type="password"
-                  placeholder="Current Password"
-                  value={currentPassword}
-                  onChange={(e) =>
-                    setCurrentPassword(
-                      e.target.value
-                    )
-                  }
-                  className="
-                    w-full
-                    border
-                    rounded-lg
-                    px-4
-                    py-3
-                    dark:bg-slate-700
-                    dark:text-white
-                  "
-                />
-
-                <input
-                  type="password"
-                  placeholder="New Password"
-                  value={newPassword}
-                  onChange={(e) =>
-                    setNewPassword(
-                      e.target.value
-                    )
-                  }
-                  className="
-                    w-full
-                    border
-                    rounded-lg
-                    px-4
-                    py-3
-                    dark:bg-slate-700
-                    dark:text-white
-                  "
-                />
-
-                <button
-                  onClick={
-                    changePasswordHandler
-                  }
-                  className="
-                    bg-green-600
-                    hover:bg-green-700
-                    text-white
-                    px-5
-                    py-3
-                    rounded-lg
-                  "
-                >
-                  Change Password
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
 
         <div
           className="
@@ -1370,59 +1120,133 @@ function DashboardPage() {
 
                             ? (
 
-                              <button
-                                onClick={async () => {
+                              <>
+                              
+                                <div
+                                  className="
+                                    flex
+                                    gap-2
+                                    mt-2
+                                  "
+                                >
 
-                                  if (
-                                    !window.confirm(
-                                      "Delete this workspace and all its notes?"
-                                    )
-                                  ) {
-                                    return;
-                                  }
+                                  <input
+                                    type="text"
+                                    placeholder="New name"
+                                    value={renameWorkspaceName}
+                                    onChange={(e) =>
+                                      setRenameWorkspaceName(
+                                        e.target.value
+                                      )
+                                    }
+                                    className="
+                                      border
+                                      rounded-lg
+                                      px-2
+                                      py-1
+                                      text-xs
+                                    "
+                                  />
 
-                                  try {
+                                  <button
+                                    onClick={async () => {
 
-                                    const data =
-                                      await deleteWorkspace(
-                                        workspace._id
+                                      try {
+
+                                        const data =
+                                          await renameWorkspace(
+                                            workspace._id,
+                                            renameWorkspaceName
+                                          );
+
+                                        toast.success(
+                                          data.message
+                                        );
+
+                                        setRenameWorkspaceName(
+                                          ""
+                                        );
+
+                                        await fetchWorkspaces();
+
+                                      } catch (error) {
+
+                                        toast.error(
+                                          error.response?.data?.message
+                                          ||
+                                          "Rename failed"
+                                        );
+                                      }
+                                    }}
+                                    className="
+                                      bg-yellow-500
+                                      text-white
+                                      px-2
+                                      py-1
+                                      rounded-lg
+                                      text-xs
+                                    "
+                                  >
+                                    Rename
+                                  </button>
+
+                                </div>
+
+                                <button
+                                  onClick={async () => {
+
+                                    if (
+                                      !window.confirm(
+                                        "Delete this workspace and all its notes?"
+                                      )
+                                    ) {
+                                      return;
+                                    }
+
+                                    try {
+
+                                      const data =
+                                        await deleteWorkspace(
+                                          workspace._id
+                                        );
+
+                                      toast.success(
+                                        data.message
                                       );
 
-                                    toast.success(
-                                      data.message
-                                    );
+                                      localStorage.removeItem(
+                                        "selectedWorkspace"
+                                      );
 
-                                    localStorage.removeItem(
-                                      "selectedWorkspace"
-                                    );
+                                      setSelectedWorkspace(
+                                        null
+                                      );
 
-                                    setSelectedWorkspace(
-                                      null
-                                    );
+                                      await fetchWorkspaces();
 
-                                    await fetchWorkspaces();
+                                    } catch (error) {
 
-                                  } catch (error) {
+                                      toast.error(
+                                        error.response?.data?.message
+                                        ||
+                                        "Delete failed"
+                                      );
+                                    }
+                                  }}
+                                  className="
+                                    mt-2
+                                    bg-red-700
+                                    text-white
+                                    px-3
+                                    py-1
+                                    rounded-lg
+                                    text-xs
+                                  "
+                                >
+                                  Delete Workspace
+                                </button>
 
-                                    toast.error(
-                                      error.response?.data?.message
-                                      ||
-                                      "Delete failed"
-                                    );
-                                  }
-                                }}
-                                className="
-                                  mt-2
-                                  bg-red-700
-                                  text-white
-                                  px-3
-                                  py-1
-                                  rounded-lg
-                                  text-xs
-                                "
-                              >
-                                Delete Workspace
-                              </button>
+                              </>
 
                             ) : (
 
@@ -1703,6 +1527,55 @@ function DashboardPage() {
                                         </option>
 
                                       </select>
+
+                                      {
+                                        String(
+                                          selectedWorkspace?.owner
+                                        ) === String(reqUserId)
+                                        && !isOwner
+                                        && (
+
+                                          <button
+                                            onClick={async () => {
+
+                                              try {
+
+                                                const data =
+                                                  await transferOwnership(
+                                                    selectedWorkspace._id,
+                                                    member.user._id
+                                                  );
+
+                                                  await fetchMembers();
+
+                                                  await fetchWorkspaces();
+
+                                                  toast.success(
+                                                    data.message
+                                                  );
+
+                                              } catch (error) {
+
+                                                toast.error(
+                                                  error.response?.data?.message
+                                                  ||
+                                                  "Transfer failed"
+                                                );
+                                              }
+                                            }}
+                                            className="
+                                              bg-yellow-500
+                                              text-white
+                                              px-4
+                                              py-2
+                                              rounded-lg
+                                            "
+                                          >
+                                            Make Owner
+                                          </button>
+
+                                        )
+                                      }
 
                                       <button
                                         disabled={isOwner}

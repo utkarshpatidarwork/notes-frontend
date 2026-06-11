@@ -1,9 +1,14 @@
 //Navbar.jsx
+import { useNavigate } from "react-router-dom";
+
 function Navbar({
   darkMode,
   setDarkMode,
   logoutHandler
 }) {
+
+  const navigate =
+    useNavigate();
 
   return (
 
@@ -48,6 +53,21 @@ function Navbar({
               ? "☀️ Light"
               : "🌙 Dark"
           }
+        </button>
+
+        <button
+          onClick={() =>
+            navigate("/settings")
+          }
+          className="
+            bg-slate-700
+            hover:bg-slate-600
+            px-4
+            py-2
+            rounded-lg
+          "
+        >
+          Settings
         </button>
 
         <button

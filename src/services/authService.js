@@ -71,3 +71,41 @@ export const changePassword =
 
     return data;
   };
+
+export const deleteAccount =
+  async () => {
+
+    const { data } =
+      await api.delete(
+        "/api/users/account"
+      );
+
+    return data;
+  };
+
+export const forgotPassword =
+  async (email) => {
+
+    const { data } =
+      await api.post(
+        "/api/users/forgot-password",
+        { email }
+      );
+
+    return data;
+  };
+
+export const resetPassword =
+  async (
+    token,
+    password
+  ) => {
+
+    const { data } =
+      await api.post(
+        `/api/users/reset-password/${token}`,
+        { password }
+      );
+
+    return data;
+  };

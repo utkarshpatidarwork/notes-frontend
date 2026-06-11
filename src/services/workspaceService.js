@@ -111,3 +111,39 @@ export const deleteWorkspace =
 
     return data;
   };
+
+export const transferOwnership =
+  async (
+    workspaceId,
+    memberId
+  ) => {
+
+    const { data } =
+      await api.put(
+        "/api/workspaces/transfer-owner",
+        {
+          workspaceId,
+          memberId
+        }
+      );
+
+    return data;
+  };
+
+export const renameWorkspace =
+  async (
+    workspaceId,
+    name
+  ) => {
+
+    const { data } =
+      await api.put(
+        "/api/workspaces/rename",
+        {
+          workspaceId,
+          name
+        }
+      );
+
+    return data;
+  };

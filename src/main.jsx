@@ -12,6 +12,17 @@ import "./index.css";
 
 import { Toaster } from "react-hot-toast";
 
+const savedTheme =
+  localStorage.getItem(
+    "theme"
+  );
+
+if (savedTheme === "dark") {
+
+  document.documentElement
+    .classList.add("dark");
+}
+
 ReactDOM.createRoot(
   document.getElementById("root")
 ).render(
