@@ -6,7 +6,8 @@ function NoteCard({
   setSelectedNote,
   togglePin,
   editHandler,
-  deleteNote
+  deleteNote,
+  canWrite
 }) {
 
   return (
@@ -142,80 +143,87 @@ function NoteCard({
           }
         </p>
 
-        <div
-          className="
-            mt-4
-            flex
-            gap-3
-          "
-        >
+        {
+          canWrite && (
+        
+            <div
+              className="
+                mt-4
+                flex
+                gap-3
+              "
+            >
 
-          <button
-            onClick={(e) => {
+              <button
+                onClick={(e) => {
 
-              e.stopPropagation();
+                  e.stopPropagation();
 
-              togglePin(note);
-            }}
-            className="
-              bg-yellow-400
-              hover:bg-yellow-500
-              active:scale-95
-              text-black
-              px-3
-              py-1
-              rounded-full
-              text-sm
-            "
-          >
-            {
-              note.isPinned
-                ? "📌"
-                : "📍"
-            }
-          </button>
+                  togglePin(note);
+                }}
+                className="
+                  bg-yellow-400
+                  hover:bg-yellow-500
+                  active:scale-95
+                  text-black
+                  px-3
+                  py-1
+                  rounded-full
+                  text-sm
+                "
+              >
+                {
+                  note.isPinned
+                    ? "📌"
+                    : "📍"
+                }
+              </button>
 
-          <button
-            onClick={(e) => {
+              <button
+                onClick={(e) => {
 
-              e.stopPropagation();
+                  e.stopPropagation();
 
-              editHandler(note);
-            }}
-            className="
-              bg-blue-500
-              hover:bg-blue-600
-              active:scale-95
-              text-white
-              px-4
-              py-2
-              rounded-lg
-            "
-          >
-            Edit
-          </button>
+                  editHandler(note);
+                }}
+                className="
+                  bg-blue-500
+                  hover:bg-blue-600
+                  active:scale-95
+                  text-white
+                  px-4
+                  py-2
+                  rounded-lg
+                "
+              >
+                Edit
+              </button>
 
-          <button
-            onClick={(e) => {
+              <button
+                onClick={(e) => {
 
-              e.stopPropagation();
+                  e.stopPropagation();
 
-              deleteNote(note._id);
-            }}
-            className="
-              bg-red-500
-              hover:bg-red-600
-              active:scale-95
-              text-white
-              px-4
-              py-2
-              rounded-lg
-            "
-          >
-            Delete
-          </button>
+                  deleteNote(note._id);
+                }}
+                className="
+                  bg-red-500
+                  hover:bg-red-600
+                  active:scale-95
+                  text-white
+                  px-4
+                  py-2
+                  rounded-lg
+                "
+              >
+                Delete
+              </button>
 
-        </div>
+            </div>
+
+          )
+
+        }
 
       </div>
 

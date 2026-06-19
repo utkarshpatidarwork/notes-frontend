@@ -133,7 +133,8 @@ export const transferOwnership =
 export const renameWorkspace =
   async (
     workspaceId,
-    name
+    name,
+    description
   ) => {
 
     const { data } =
@@ -141,7 +142,8 @@ export const renameWorkspace =
         "/api/workspaces/rename",
         {
           workspaceId,
-          name
+          name,
+          description
         }
       );
 

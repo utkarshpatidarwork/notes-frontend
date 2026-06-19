@@ -3,7 +3,10 @@ import ReactMarkdown from "react-markdown";
 
 function NoteModal({
   selectedNote,
-  setSelectedNote
+  setSelectedNote,
+  canWrite,
+  editHandler,
+  deleteNote
 }) {
 
   if (!selectedNote) return null;
@@ -116,6 +119,66 @@ function NoteModal({
               >
                 {selectedNote.category}
               </div>
+
+              {
+                canWrite && (
+
+                  <div
+                    className="
+                      flex
+                      gap-3
+                      mt-4
+                    "
+                  >
+
+                    <button
+                      onClick={() => {
+
+                        editHandler(
+                          selectedNote
+                        );
+
+                        setSelectedNote(
+                          null
+                        );
+                      }}
+                      className="
+                        bg-blue-600
+                        text-white
+                        px-4
+                        py-2
+                        rounded-lg
+                      "
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      onClick={() => {
+
+                        deleteNote(
+                          selectedNote._id
+                        );
+
+                        setSelectedNote(
+                          null
+                        );
+                      }}
+                      className="
+                        bg-red-600
+                        text-white
+                        px-4
+                        py-2
+                        rounded-lg
+                      "
+                    >
+                      Delete
+                    </button>
+
+                  </div>
+
+                )
+              }
 
             </div>
 
