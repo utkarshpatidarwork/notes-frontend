@@ -1,4 +1,5 @@
 //tailwind.config.js
+import typography from "@tailwindcss/typography";
 /** @type {import('tailwindcss').Config} */
 export default {
 
@@ -11,9 +12,7 @@ export default {
     extend: {},
   },
 
-  plugins: [
-    require("@tailwindcss/typography")
-  ],
+  plugins: [typography],
 
   animation: {
     fadeIn:

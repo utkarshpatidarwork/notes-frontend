@@ -40,8 +40,6 @@ import toast from "react-hot-toast";
 
 import { io } from "socket.io-client";
 
-import { formatDistanceToNow } from "date-fns";
-
 import {
   useNavigate
 } from "react-router-dom";
@@ -52,9 +50,25 @@ import SearchBar from "../components/SearchBar";
 
 import CategoryFilters from "../components/CategoryFilters";
 
-import NoteCard from "../components/NoteCard";
-
 import NoteModal from "../components/NoteModal";
+
+import StatisticsSection from "../components/dashboard/StatisticsSection";
+
+import EmptyWorkspace from "../components/dashboard/EmptyWorkspace";
+
+import ActivitySection from "../components/dashboard/ActivitySection";
+
+import TrashSection from "../components/dashboard/TrashSection";
+
+import MembersSection from "../components/dashboard/MembersSection";
+
+import NoteForm from "../components/dashboard/NoteForm";
+
+import WorkspaceSettings from "../components/dashboard/WorkspaceSettings";
+
+import WorkspaceSection from "../components/dashboard/WorkspaceSection";
+
+import NotesSection from "../components/dashboard/NotesSection";
 
 function DashboardPage() {
 
@@ -635,6 +649,13 @@ const isOwner =
   useEffect(() => {
 
     if (!selectedWorkspace) {
+
+      setTitle("");
+      setContent("");
+      setAttachments([]);
+      setCategory("General");
+      setEditingId(null);
+
       return;
     }
 
@@ -647,6 +668,12 @@ const isOwner =
     );
 
     setEditingWorkspace(false);
+
+    setTitle("");
+    setContent("");
+    setAttachments([]);
+    setCategory("General");
+    setEditingId(null);
 
   }, [selectedWorkspace]);
 
@@ -1128,364 +1155,41 @@ const isOwner =
         "
       >
 
-        <div
-          className="
-            bg-white
-            dark:bg-slate-800
-            p-6
-            rounded-2xl
-            shadow-md
-            mb-6
-          "
-        >
+        <WorkspaceSection
+          workspaceName={workspaceName}
+          setWorkspaceName={setWorkspaceName}
 
-          <h2
-            className="
-              text-2xl
-              font-bold
-              mb-4
-              dark:text-white
-            "
-          >
-            Workspaces
-          </h2>
+          inviteCode={inviteCode}
+          setInviteCode={setInviteCode}
 
-          <div className="flex flex-col md:flex-row gap-3 mb-4">
+          creatingWorkspace={creatingWorkspace}
+          setCreatingWorkspace={setCreatingWorkspace}
 
-            <input
-              type="text"
-              placeholder="Workspace Name"
-              value={workspaceName}
-              onChange={(e) =>
-                setWorkspaceName(
-                  e.target.value
-                )
-              }
-              className="
-                flex-1
-                border
-                rounded-lg
-                px-4
-                py-3
-                dark:bg-slate-700
-                dark:text-white
-              "
-            />
+          joiningWorkspace={joiningWorkspace}
+          setJoiningWorkspace={setJoiningWorkspace}
 
-            <button
-              onClick={async () => {
+          workspaces={workspaces}
+          workspaceLoading={workspaceLoading}
 
-                try {
+          selectedWorkspace={selectedWorkspace}
+          setSelectedWorkspace={setSelectedWorkspace}
 
-                  setCreatingWorkspace(true);
+          reqUserId={reqUserId}
 
-                  const workspace =
-                    await createWorkspace(
-                      workspaceName
-                    );
+          createWorkspace={createWorkspace}
+          joinWorkspace={joinWorkspace}
 
-                  setWorkspaceName("");
+          setWorkspaces={setWorkspaces}
 
-                  setWorkspaces(
-                    (prev) => [
-                      ...prev,
-                      workspace
-                    ]
-                  );
-
-                  setSelectedWorkspace(
-                    workspace
-                  );
-
-                  toast.success(
-                    "Workspace Created"
-                  );
-
-                } catch (error) {
-
-                  toast.error(
-                    error.response?.data?.message
-                    ||
-                    "Workspace creation failed"
-                  );
-
-                } finally {
-
-                  setCreatingWorkspace(false);
-                }
-              }}
-              className="
-                bg-blue-600
-                hover:bg-blue-700
-                active:scale-95
-                focus:ring-2
-                focus:ring-blue-500
-                focus:outline-none
-                text-white
-                px-6
-                rounded-lg
-              "
-              disabled={creatingWorkspace}
-            >
-              {
-                creatingWorkspace
-                  ? "Creating..."
-                  : "Create"
-              }
-            </button>
-
-            <input
-              type="text"
-              placeholder="Invite Code"
-              value={inviteCode}
-              onChange={(e) =>
-                setInviteCode(
-                  e.target.value
-                )
-              }
-              className="
-                flex-1
-                border
-                rounded-lg
-                px-4
-                py-3
-                dark:bg-slate-700
-                dark:text-white
-              "
-            />
-
-            <button
-              onClick={async () => {
-
-                try {
-
-                  setJoiningWorkspace(true);
-
-                  const workspace =
-                    await joinWorkspace(
-                      inviteCode
-                    );
-
-                  setInviteCode("");
-
-                  setWorkspaces(
-                    (prev) => [
-                      ...prev,
-                      workspace
-                    ]
-                  );
-
-                  setSelectedWorkspace(
-                    workspace
-                  );
-
-                  toast.success(
-                    "Joined Workspace"
-                  );
-
-                } catch (error) {
-
-                  toast.error(
-                    error.response?.data?.message
-                    ||
-                    "Join failed"
-                  );
-
-                } finally {
-
-                  setJoiningWorkspace(false);
-                }
-              }}
-              className="
-                bg-green-600
-                hover:bg-green-700
-                active:scale-95
-                focus:ring-2
-                focus:ring-blue-500
-                focus:outline-none
-                text-white
-                px-6
-                rounded-lg
-              "
-
-              disabled={joiningWorkspace}
-            >
-              {
-                joiningWorkspace
-                  ? "Joining..."
-                  : "Join"
-              }
-            </button>
-
-          </div>
-
-          {
-            workspaceLoading ? (
-
-              <div
-                className="
-                  text-gray-500
-                  dark:text-gray-300
-                "
-              >
-                Loading Workspaces...
-              </div>
-
-            ) : (
-
-              <div
-                className="
-                  grid
-                  grid-cols-1
-                  md:grid-cols-2
-                  lg:grid-cols-3
-                  gap-4
-                "
-              >
-
-                {
-                  workspaces.map(
-                    (workspace) => (
-
-                      <div
-                        key={workspace._id}
-                        onClick={() =>
-                          setSelectedWorkspace(
-                            workspace
-                          )
-                        }
-                        className={`
-                          cursor-pointer
-                          rounded-2xl
-                          border
-                          p-5
-                          transition
-                          hover:shadow-lg
-
-                          ${
-                            selectedWorkspace?._id
-                            === workspace._id
-                              ? "border-blue-500 bg-blue-50 dark:bg-slate-700"
-                              : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
-                          }
-                        `}
-                      >
-
-                        <div
-                          className="
-                            flex
-                            justify-between
-                            items-start
-                            mb-4
-                          "
-                        >
-
-                          <div>
-
-                            <h3
-                              className="
-                                font-bold
-                                text-lg
-                                dark:text-white
-                              "
-                            >
-                              {workspace.name}
-                            </h3>
-
-                            <div
-                              className="
-                                text-xs
-                                text-gray-500
-                                mt-1
-                              "
-                            >
-                              {
-                                workspace.owner?._id
-                                === reqUserId
-                                  ? "👑 Owner"
-                                  : "👀 Member"
-                              }
-                            </div>
-
-                          </div>
-
-                          {
-                            selectedWorkspace?._id
-                            === workspace._id
-                            && (
-
-                              <span
-                                className="
-                                  text-xs
-                                  bg-blue-600
-                                  text-white
-                                  px-2
-                                  py-1
-                                  rounded-full
-                                "
-                              >
-                                Active
-                              </span>
-
-                            )
-                          }
-
-                        </div>
-
-                      </div>
-
-                    )
-                  )
-                }
-
-              </div>
-
-            )
-          }
-
-        </div>
+          toast={toast}
+        />
 
         {
           !selectedWorkspace ? (
 
-            <div
-              className="
-                bg-white
-                dark:bg-slate-800
-                rounded-2xl
-                shadow-md
-                p-16
-                text-center
-              "
-            >
+            <EmptyWorkspace />
 
-              <div className="text-6xl mb-6">
-                🚀
-              </div>
-
-              <h2
-                className="
-                  text-3xl
-                  font-bold
-                  mb-4
-                  dark:text-white
-                "
-              >
-                No Workspace Selected
-              </h2>
-
-              <p
-                className="
-                  text-gray-500
-                  dark:text-gray-400
-                "
-              >
-                Create a workspace or join one using an invite code to start managing notes.
-              </p>
-
-            </div>
-
-            ) : (
+          ) : (
 
             <>
 
@@ -1571,1430 +1275,111 @@ const isOwner =
 
                   </div>
                   
-                  <div
-                    className="
-                      bg-white
-                      dark:bg-slate-800
-                      p-6
-                      rounded-2xl
-                      shadow-md
-                      mb-6
-                    "
-                  >
+                  <WorkspaceSettings
+                    isOwner={isOwner}
 
-                    <div
-                      className="
-                        flex
-                        justify-between
-                        items-center
-                        mb-4
-                      "
-                    >
+                    editingWorkspace={editingWorkspace}
+                    setEditingWorkspace={setEditingWorkspace}
 
-                      <h2
-                        className="
-                          text-2xl
-                          font-bold
-                          dark:text-white
-                        "
-                      >
-                        Workspace Settings
-                      </h2>
+                    selectedWorkspace={selectedWorkspace}
 
-                      {
-                        isOwner && (
+                    renameWorkspaceName={renameWorkspaceName}
+                    setRenameWorkspaceName={setRenameWorkspaceName}
 
-                          <button
-                            onClick={() =>
-                              setEditingWorkspace(
-                                !editingWorkspace
-                              )
-                            }
-                            className="
-                              w-9
-                              h-9
-                              rounded-full
-                              bg-slate-100
-                              dark:bg-slate-700
-                              flex
-                              items-center
-                              justify-center
-                              hover:scale-105
-                              transition
-                            "
-                          >
-                            ⚙️
-                          </button>
+                    workspaceDescription={workspaceDescription}
+                    setWorkspaceDescription={setWorkspaceDescription}
 
-                        )
-                      }
+                    actionLoading={actionLoading}
+                    setActionLoading={setActionLoading}
 
-                    </div>
+                    renameWorkspace={renameWorkspace}
+                    deleteWorkspace={deleteWorkspace}
+                    leaveWorkspace={leaveWorkspace}
 
-                    <div className="space-y-4">
+                    fetchWorkspaces={fetchWorkspaces}
 
-                      <div className="space-y-2 text-sm">
+                    setSelectedWorkspace={setSelectedWorkspace}
 
-                        <div className="dark:text-white">
-                          <span className="font-semibold">
-                            Owner:
-                          </span>{" "}
-                          {selectedWorkspace.owner?.name || "Unknown"}
-                        </div>
+                    setConfirmConfig={setConfirmConfig}
+                    setConfirmOpen={setConfirmOpen}
 
-                        <div
-                          className="
-                            flex
-                            items-center
-                            gap-2
-                            dark:text-white
-                          "
-                        >
+                    toast={toast}
+                  />
 
-                          <span>
-                            <span className="font-semibold">
-                              Invite Code:
-                            </span>{" "}
-                            {selectedWorkspace.inviteCode}
-                          </span>
+              <MembersSection
+                memberSearch={memberSearch}
+                setMemberSearch={setMemberSearch}
 
-                          <button
-                            onClick={() => {
+                membersLoading={membersLoading}
+                filteredMembers={filteredMembers}
 
-                              navigator.clipboard.writeText(
-                                selectedWorkspace.inviteCode
-                              );
+                isOwner={isOwner}
+                actionLoading={actionLoading}
 
-                              toast.success(
-                                "Invite code copied"
-                              );
-                            }}
-                            className="text-sm"
-                          >
-                            📋
-                          </button>
+                selectedWorkspace={selectedWorkspace}
 
-                        </div>
+                fetchMembers={fetchMembers}
+                fetchActivities={fetchActivities}
+                fetchWorkspaces={fetchWorkspaces}
 
-                        <div className="dark:text-white">
-                          <span className="font-semibold">
-                            Created:
-                          </span>{" "}
-                          {
-                            new Date(
-                              selectedWorkspace.createdAt
-                            ).toLocaleDateString()
-                          }
-                        </div>
+                changeMemberRole={changeMemberRole}
+                removeMember={removeMember}
+                transferOwnership={transferOwnership}
 
-                      </div>
+                setActionLoading={setActionLoading}
+                setConfirmConfig={setConfirmConfig}
+                setConfirmOpen={setConfirmOpen}
 
-                      {
-                        isOwner
-                        &&
-                        editingWorkspace
-                        && (
+                toast={toast}
+              />
 
-                          <div
-                            className="
-                              border-t
-                              pt-4
-                              mt-4
-                              space-y-3
-                            "
-                          >
-
-                            <input
-                              type="text"
-                              value={renameWorkspaceName}
-                              onChange={(e) =>
-                                setRenameWorkspaceName(
-                                  e.target.value
-                                )
-                              }
-                              placeholder="Workspace Name"
-                              className="
-                                w-full
-                                border
-                                rounded-lg
-                                px-3
-                                py-2
-                                dark:bg-slate-700
-                                dark:text-white
-                              "
-                            />
-
-                            <textarea
-                              value={workspaceDescription}
-                              onChange={(e) =>
-                                setWorkspaceDescription(
-                                  e.target.value
-                                )
-                              }
-                              rows={4}
-                              placeholder="Workspace Description"
-                              className="
-                                w-full
-                                border
-                                rounded-lg
-                                px-3
-                                py-2
-                                dark:bg-slate-700
-                                dark:text-white
-                              "
-                            />
-
-                            <div className="flex gap-2">
-
-                              <button
-                                onClick={async () => {
-
-                                  try {
-
-                                    setActionLoading(
-                                      "rename"
-                                    );
-
-                                    const data =
-                                      await renameWorkspace(
-                                        selectedWorkspace._id,
-                                        renameWorkspaceName,
-                                        workspaceDescription
-                                      );
-
-                                    toast.success(
-                                      data.message
-                                    );
-
-                                    setEditingWorkspace(
-                                      false
-                                    );
-
-                                    await fetchWorkspaces();
-
-                                  } catch (error) {
-
-                                    toast.error(
-                                      error.response?.data?.message
-                                      ||
-                                      "Save failed"
-                                    );
-
-                                  } finally {
-
-                                    setActionLoading(
-                                      null
-                                    );
-                                  }
-                                }}
-                                disabled={
-                                  actionLoading === "rename"
-                                }
-                                className="
-                                  bg-blue-600
-                                  hover:bg-blue-700
-                                  text-white
-                                  px-4
-                                  py-2
-                                  rounded-lg
-                                "
-                              >
-                                {
-                                  actionLoading === "rename"
-                                    ? "Saving..."
-                                    : "Save Changes"
-                                }
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={() => {
-
-                                  setRenameWorkspaceName(
-                                    selectedWorkspace.name
-                                  );
-
-                                  setWorkspaceDescription(
-                                    selectedWorkspace.description
-                                    || ""
-                                  );
-
-                                  setEditingWorkspace(
-                                    false
-                                  );
-                                }}
-                                className="
-                                  border
-                                  px-4
-                                  py-2
-                                  rounded-lg
-                                  dark:text-white
-                                "
-                              >
-                                Cancel
-                              </button>
-
-                            </div>
-
-                          </div>
-
-                        )
-                      }
-
-                      <div className="border-t pt-4 mt-4">
-
-                        {
-                          isOwner ? (
-
-                            <button
-                              onClick={() => {
-
-                                setConfirmConfig({
-
-                                  title:
-                                    "Delete Workspace",
-
-                                  message:
-                                    "This will permanently delete the workspace and all notes.",
-
-                                  confirmText:
-                                    "Delete",
-
-                                  confirmColor:
-                                    "bg-red-700",
-
-                                  onConfirm: async () => {
-
-                                    const data =
-                                      await deleteWorkspace(
-                                        selectedWorkspace._id
-                                      );
-
-                                    toast.success(
-                                      data.message
-                                    );
-
-                                    localStorage.removeItem(
-                                      "selectedWorkspace"
-                                    );
-
-                                    setSelectedWorkspace(
-                                      null
-                                    );
-
-                                    await fetchWorkspaces();
-                                  }
-                                });
-
-                                setConfirmOpen(true);
-                              }}
-                              className="
-                                bg-red-700
-                                text-white
-                                px-4
-                                py-2
-                                rounded-lg
-                              "
-                            >
-                              Delete Workspace
-                            </button>
-
-                          ) : (
-
-                            <button
-                              onClick={() => {
-
-                                setConfirmConfig({
-
-                                  title:
-                                    "Leave Workspace",
-
-                                  message:
-                                    "Are you sure you want to leave this workspace?",
-
-                                  confirmText:
-                                    "Leave",
-
-                                  confirmColor:
-                                    "bg-red-500",
-
-                                  onConfirm: async () => {
-
-                                    const data =
-                                      await leaveWorkspace(
-                                        selectedWorkspace._id
-                                      );
-
-                                    toast.success(
-                                      data.message
-                                    );
-
-                                    localStorage.removeItem(
-                                      "selectedWorkspace"
-                                    );
-
-                                    setSelectedWorkspace(
-                                      null
-                                    );
-
-                                    await fetchWorkspaces();
-                                  }
-                                });
-
-                                setConfirmOpen(true);
-                              }}
-                              className="
-                                bg-red-500
-                                text-white
-                                px-4
-                                py-2
-                                rounded-lg
-                              "
-                            >
-                              Leave Workspace
-                            </button>
-
-                          )
-                        }
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-              <div
-                className="
-                  bg-white
-                  dark:bg-slate-800
-                  p-6
-                  rounded-2xl
-                  shadow-md
-                  mb-6
-                "
-              >
-
-                <h2
-                  className="
-                    text-2xl
-                    font-bold
-                    mb-4
-                    dark:text-white
-                  "
-                >
-                  Members
-                </h2>
-
-                <input
-                  type="text"
-                  placeholder="Search members..."
-                  value={memberSearch}
-                  onChange={(e) =>
-                    setMemberSearch(
-                      e.target.value
-                    )
-                  }
-                  className="
-                    w-full
-                    border
-                    rounded-lg
-                    px-3
-                    py-2
-                    mb-4
-                    dark:bg-slate-700
-                    dark:text-white
-                  "
-                />
-
-                {
-                  membersLoading ? (
-
-                    <div
-                      className="
-                        dark:text-white
-                      "
-                    >
-                      Loading Members...
-                    </div>
-
-                  ) : (
-
-                    <div className="space-y-4">
-
-                      {
-                        filteredMembers.map(
-                          (member) => {
-
-                            const memberIsOwner =
-                              member.role === "owner";
-
-                            return (
-
-                              <div
-                                key={member._id}
-                                className="
-                                  flex
-                                  flex-col
-                                  md:flex-row
-                                  md:items-center
-                                  md:justify-between
-                                  gap-3
-                                  border-b
-                                  pb-3
-                                "
-                              >
-
-                                <div
-                                  className="
-                                    flex
-                                    justify-between
-                                    items-center
-                                    flex-1
-                                  "
-                                >
-
-                                  <div>
-
-                                    <div
-                                      className="
-                                        font-semibold
-                                        dark:text-white
-                                      "
-                                    >
-                                      {member.user.name}
-                                    </div>
-
-                                    <div
-                                      className="
-                                        text-sm
-                                        text-gray-500
-                                      "
-                                    >
-                                      {member.user.email}
-                                    </div>
-
-                                  </div>
-
-                                  <div
-                                    className={`
-                                      px-3
-                                      py-1
-                                      rounded-full
-                                      text-xs
-                                      font-semibold
-                                      capitalize
-
-                                      ${
-                                        member.role === "owner"
-                                          ? "bg-yellow-100 text-yellow-700"
-                                          : member.role === "editor"
-                                          ? "bg-blue-100 text-blue-700"
-                                          : "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-white"
-                                      }
-                                    `}
-                                  >
-                                    {
-                                      member.role === "owner"
-                                        ? "👑 Owner"
-                                        : member.role === "editor"
-                                        ? "✏️ Editor"
-                                        : "👀 Viewer"
-                                    }
-
-                                  </div>
-
-                                </div>
-
-                                {
-                                  isOwner
-                                  && !memberIsOwner
-                                  && (
-
-                                    <div
-                                      className="
-                                        flex
-                                        gap-2
-                                        items-center
-                                      "
-                                    >
-
-                                      <select
-                                        disabled={
-                                          memberIsOwner
-                                          ||
-                                          actionLoading ===
-                                            `role-${member.user._id}`
-                                        }
-                                        value={member.role}
-                                        onChange={async (e) => {
-
-                                          try {
-
-                                            setActionLoading(
-                                              `role-${member.user._id}`
-                                            );
-
-                                            const data =
-                                              await changeMemberRole(
-                                                selectedWorkspace._id,
-                                                member.user._id,
-                                                e.target.value
-                                              );
-
-                                            toast.success(
-                                              data.message
-                                            );
-
-                                            await fetchMembers();
-
-                                          } catch (error) {
-
-                                            toast.error(
-                                              error.response?.data?.message
-                                              ||
-                                              "Role update failed"
-                                            );
-
-                                          } finally {
-
-                                            setActionLoading(
-                                              null
-                                            );
-                                          }
-                                        }}
-                                        className="
-                                          border
-                                          border-slate-300
-                                          dark:border-slate-600
-                                          bg-white
-                                          dark:bg-slate-700
-                                          dark:text-white
-                                          rounded-lg
-                                          px-3
-                                          py-2
-                                          shadow-sm
-                                          focus:ring-2
-                                          focus:ring-blue-500
-                                          focus:outline-none
-                                        "
-                                      >
-
-                                        <option value="viewer">
-                                          Viewer
-                                        </option>
-
-                                        <option value="editor">
-                                          Editor
-                                        </option>
-
-                                      </select>
-
-                                      {
-                                        actionLoading ===
-                                          `role-${member.user._id}`
-                                        && (
-
-                                          <span
-                                            className="
-                                              text-xs
-                                              text-blue-600
-                                              ml-2
-                                            "
-                                          >
-                                            Updating...
-                                          </span>
-
-                                        )
-                                      }
-
-                                      {
-                                        isOwner
-                                        && !memberIsOwner
-                                        && (
-
-                                          <button
-                                            onClick={() => {
-
-                                              setConfirmConfig({
-
-                                                title:
-                                                  "Transfer Ownership",
-
-                                                message:
-                                                  `Transfer ownership to ${member.user.name}? You will no longer be the owner.`,
-
-                                                confirmText:
-                                                  "Transfer",
-
-                                                confirmColor:
-                                                  "bg-yellow-600",
-
-                                                onConfirm: async () => {
-
-                                                  try {
-
-                                                    setActionLoading(
-                                                      `transfer-${member.user._id}`
-                                                    );
-
-                                                    const data =
-                                                      await transferOwnership(
-                                                        selectedWorkspace._id,
-                                                        member.user._id
-                                                      );
-
-                                                    toast.success(
-                                                      data.message
-                                                    );
-
-                                                    await fetchMembers();
-
-                                                    await fetchWorkspaces();
-
-                                                  } catch (error) {
-
-                                                    toast.error(
-                                                      error.response?.data?.message
-                                                      ||
-                                                      "Transfer failed"
-                                                    );
-
-                                                  } finally {
-
-                                                    setActionLoading(null);
-                                                  }
-                                                }
-                                              });
-
-                                              setConfirmOpen(true);
-                                            }}
-                                            disabled={
-                                              actionLoading ===
-                                                `transfer-${member.user._id}`
-                                            }
-                                            className="
-                                              bg-yellow-500
-                                              text-white
-                                              px-4
-                                              py-2
-                                              rounded-lg
-                                            "
-                                          >
-                                            {
-                                              actionLoading ===
-                                                `transfer-${member.user._id}`
-                                                  ? "Transferring..."
-                                                  : "Make Owner"
-                                            }
-                                          </button>
-
-                                        )
-                                      }
-
-                                      <button
-                                        disabled={
-                                          memberIsOwner
-                                          ||
-                                          actionLoading ===
-                                            `remove-${member.user._id}`
-                                        }
-                                        onClick={() => {
-
-                                          setConfirmConfig({
-
-                                            title:
-                                              "Remove Member",
-
-                                            message:
-                                              `Remove ${member.user.name} from this workspace?`,
-
-                                            confirmText:
-                                              "Remove",
-
-                                            confirmColor:
-                                              "bg-red-600",
-
-                                            onConfirm: async () => {
-
-                                              try {
-
-                                                setActionLoading(
-                                                  `remove-${member.user._id}`
-                                                );
-
-                                                await removeMember(
-                                                  selectedWorkspace._id,
-                                                  member.user._id
-                                                );
-
-                                                await fetchMembers();
-
-                                                await fetchActivities();
-
-                                                toast.success(
-                                                  "Member Removed"
-                                                );
-
-                                              } catch (error) {
-
-                                                toast.error(
-                                                  error.response?.data?.message
-                                                  ||
-                                                  "Remove failed"
-                                                );
-
-                                              } finally {
-
-                                                setActionLoading(null);
-                                              }
-                                            }
-                                          });
-
-                                          setConfirmOpen(true);
-                                        }}
-                                        className="
-                                          bg-red-500
-                                          text-white
-                                          px-4
-                                          py-2
-                                          rounded-lg
-                                        "
-                                      >
-                                        {
-                                          actionLoading ===
-                                            `remove-${member.user._id}`
-                                              ? "Removing..."
-                                              : "Remove"
-                                        }
-                                      </button>
-
-                                    </div>
-
-                                  )
-                                }
-
-                              </div>
-
-                            );
-
-                          }
-                        )
-                      }
-
-                    </div>
-
-                  )
-                }
-
-              </div>
-
-              <div
-                className="
-                  bg-white
-                  dark:bg-slate-800
-                  p-6
-                  rounded-2xl
-                  shadow-md
-                  mb-6
-                "
-              >
-
-                <h2
-                  className="
-                    text-2xl
-                    font-bold
-                    mb-4
-                    dark:text-white
-                  "
-                >
-                  Recent Activity
-                </h2>
-
-                <div
-                  className="
-                    flex
-                    gap-2
-                    flex-wrap
-                    mb-4
-                  "
-                >
-
-                  {
-                    [
-                      "ALL",
-                      "NOTES",
-                      "MEMBERS",
-                      "WORKSPACE"
-                    ].map(
-                      (filter) => (
-
-                        <button
-                          key={filter}
-                          onClick={() =>
-                            setActivityFilter(
-                              filter
-                            )
-                          }
-                          className={`
-                            px-3
-                            py-1
-                            rounded-full
-                            text-sm
-                            transition
-
-                            ${
-                              activityFilter ===
-                              filter
-                                ? "bg-blue-600 text-white"
-                                : "bg-slate-200 dark:bg-slate-700 dark:text-white"
-                            }
-                          `}
-                        >
-                          {filter}
-                        </button>
-
-                      )
-                    )
-                  }
-
-                </div>
-
-                <div className="
-                    space-y-3
-                    max-h-96
-                    overflow-y-auto
-                    pr-2
-                  "
-                >
-
-                  {
-                    filteredActivities.length === 0
-                    ? (
-                      <p
-                        className="
-                          text-gray-500
-                          dark:text-gray-400
-                        "
-                      >
-                        No activity yet
-                      </p>
-                    )
-                    : (
-                      filteredActivities
-                        .map(
-                        (activity) => (
-
-                          <div
-                            key={activity._id}
-                            className="
-                              border-b
-                              pb-2
-                            "
-                          >
-
-                            <div
-                              className="
-                                space-y-1
-                              "
-                            >
-
-                              <div
-                                className="
-                                  dark:text-white
-                                "
-                              >
-
-                                <span className="mr-2">
-                                  {getActivityIcon(
-                                    activity.action
-                                  )}
-                                </span>
-
-                                <strong>
-                                  {activity.user?.name}
-                                </strong>
-
-                                {" "}
-
-                                {formatActivity(activity)}
-
-                              </div>
-
-                              <div
-                                className="
-                                  text-xs
-                                  text-gray-500
-                                "
-                              >
-
-                                {
-                                  formatDistanceToNow(
-                                    new Date(
-                                      activity.createdAt
-                                    ),
-                                    {
-                                      addSuffix: true
-                                    }
-                                  )
-                                }
-
-                              </div>
-
-                            </div>
-
-                          </div>
-
-                        )
-                      )
-                    )
-                  }
-
-                </div>
-
-              </div>
+              <ActivitySection
+                activityFilter={activityFilter}
+                setActivityFilter={setActivityFilter}
+                filteredActivities={filteredActivities}
+                getActivityIcon={getActivityIcon}
+                formatActivity={formatActivity}
+              />
 
               {
                 canWrite && (
 
-                  <div
-                    className="
-                      bg-white
-                      dark:bg-slate-800
-                      p-6
-                      rounded-2xl
-                      shadow-md
-                      mb-10
-                    "
-                  >
+                  <NoteForm
+                    title={title}
+                    setTitle={setTitle}
 
-                    <h2
-                      className="
-                        text-2xl
-                        font-semibold
-                        mb-4
-                        dark:text-white
-                      "
-                    >
-                      {
-                        editingId
-                          ? "Update Note"
-                          : "Create Note"
-                      }
-                    </h2>
+                    content={content}
+                    setContent={setContent}
 
-                    <form
-                      onSubmit={
-                        editingId
-                          ? updateNote
-                          : createNote
-                      }
-                      className="
-                        flex
-                        flex-col
-                        gap-4
-                      "
-                    >
+                    category={category}
+                    setCategory={setCategory}
 
-                      <input
-                        type="text"
-                        placeholder="Title"
-                        value={title}
-                        onChange={(e) =>
-                          setTitle(e.target.value)
-                        }
-                        className="
-                          border
-                          rounded-lg
-                          px-4
-                          py-3
-                          outline-none
-                          focus:ring-2
-                          focus:ring-blue-500
-                          dark:bg-slate-700
-                          dark:text-white
-                          dark:border-slate-600
-                        "
-                      />
+                    attachments={attachments}
+                    setAttachments={setAttachments}
 
-                      <textarea
-                        placeholder="Content"
-                        value={content}
-                        onChange={(e) =>
-                          setContent(e.target.value)
-                        }
-                        rows={10}
-                        className="
-                          border
-                          rounded-lg
-                          px-4
-                          py-3
-                          outline-none
-                          focus:ring-2
-                          focus:ring-blue-500
-                          dark:bg-slate-700
-                          dark:text-white
-                          dark:border-slate-600
-                          resize-y
-                          min-h-[250px]
-                        "
-                      />
+                    uploading={uploading}
+                    uploadCount={uploadCount}
 
-                      <select
-                        value={category}
-                        onChange={(e) =>
-                          setCategory(e.target.value)
-                        }
-                        className="
-                          border
-                          rounded-lg
-                          px-4
-                          py-3
-                          outline-none
-                          focus:ring-2
-                          focus:ring-blue-500
-                          dark:bg-slate-700
-                          dark:text-white
-                          dark:border-slate-600
-                        "
-                      >
+                    creating={creating}
+                    editingId={editingId}
 
-                        <option value="General">
-                          General
-                        </option>
+                    uploadFile={uploadFile}
 
-                        <option value="Work">
-                          Work
-                        </option>
+                    createNote={createNote}
+                    updateNote={updateNote}
 
-                        <option value="Personal">
-                          Personal
-                        </option>
-
-                        <option value="Study">
-                          Study
-                        </option>
-
-                        <option value="Ideas">
-                          Ideas
-                        </option>
-
-                        <option value="Projects">
-                          Projects
-                        </option>
-
-                      </select>
-
-                      <label
-                        className="
-                          flex
-                          flex-col
-                          items-center
-                          justify-center
-                          border-2
-                          border-dashed
-                          border-slate-300
-                          dark:border-slate-600
-                          rounded-2xl
-                          p-10
-                          cursor-pointer
-                          hover:border-blue-500
-                          hover:bg-blue-50
-                          dark:hover:bg-slate-700
-                          transition
-                          duration-300
-                          text-gray-600
-                          dark:text-gray-300
-                          font-medium
-                          animate-fadeIn
-                        "
-                      >
-
-                        <input
-                          type="file"
-                          multiple
-                          className="hidden"
-                          onChange={(e) => {
-
-                            Array.from(
-                              e.target.files
-                            ).forEach((file) => {
-
-                              uploadFile(file);
-                            });
-                          }}
-                        />
-
-                        <div className="text-5xl mb-3">
-                          📁
-                        </div>
-
-                        <div className="text-lg font-semibold">
-                          {
-                            uploading
-                              ? `Uploading ${uploadCount} file(s)...`
-                              : "Choose Files"
-                          }
-                        </div>
-
-                        <div
-                          className="
-                            text-sm
-                            text-gray-500
-                            mt-2
-                            text-center
-                          "
-                        >
-                          Drag & drop files or click
-                          to browse
-                        </div>
-
-                      </label>
-
-                      {
-                        attachments.length > 0 && (
-
-                          <div
-                            className="
-                              mt-4
-                              flex
-                              flex-wrap
-                              gap-3
-                            "
-                          >
-
-                            {
-                              attachments.map(
-                                (file, index) => (
-
-                                  <div
-                                    key={index}
-                                    className="
-                                      bg-slate-100
-                                      dark:bg-slate-700
-                                      px-4
-                                      py-2
-                                      rounded-xl
-                                      text-sm
-                                      dark:text-white
-                                      shadow-sm
-                                      flex
-                                      items-center
-                                      gap-2
-                                    "
-                                  >
-
-                                    <span>
-                                      📎 {file.name}
-                                    </span>
-
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-
-                                        setAttachments(
-                                          attachments.filter(
-                                            (_, i) =>
-                                              i !== index
-                                          )
-                                        );
-                                      }}
-                                      className="
-                                        text-red-500
-                                        font-bold
-                                        hover:text-red-700
-                                        ml-1
-                                      "
-                                    >
-                                      ✕
-                                    </button>
-
-                                  </div>
-
-                                )
-                              )
-                            }
-
-                          </div>
-
-                        )
-                      }
-
-                      <div
-                        className="
-                          flex
-                          gap-3
-                        "
-                      >
-
-                        <button
-                          type="submit"
-                          disabled={
-                            creating
-                            ||
-                            uploading
-                          }
-                          className="
-                            flex-1
-                            bg-blue-600
-                            hover:bg-blue-700
-                            active:scale-95
-                            focus:ring-2
-                            focus:ring-blue-500
-                            focus:outline-none
-                            text-white
-                            py-3
-                            rounded-lg
-                            font-semibold
-                            disabled:opacity-50
-                          "
-                        >
-                          {
-                            uploading
-                              ? "Uploading Files..."
-                              : creating
-                                ? (
-                                    editingId
-                                      ? "Updating..."
-                                      : "Creating..."
-                                  )
-                                : (
-                                    editingId
-                                      ? "Update Note"
-                                      : "Create Note"
-                                  )
-                          }
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={clearNoteForm}
-                          className="
-                            px-6
-                            py-3
-                            rounded-lg
-                            border
-                            border-slate-300
-                            dark:border-slate-600
-                            dark:text-white
-                          "
-                        >
-                          Clear
-                        </button>
-
-                      </div>
-
-                    </form>
-
-                  </div>
+                    clearNoteForm={clearNoteForm}
+                  />
 
                 )
 
               }
 
-              <div
-                className="
-                  bg-white
-                  dark:bg-slate-800
-                  p-6
-                  rounded-2xl
-                  shadow-md
-                  mb-6
-                "
-              >
-                <h2
-                  className="
-                    text-2xl
-                    font-bold
-                    mb-4
-                    dark:text-white
-                  "
-                >
-                  Statistics
-                </h2>
-
-                <div
-                  className="
-                    grid
-                    grid-cols-2
-                    md:grid-cols-4
-                    gap-4
-                  "
-                >
-
-                  <div
-                    className="
-                      bg-slate-100
-                      dark:bg-slate-700
-                      p-4
-                      rounded-xl
-                    "
-                  >
-                    <div className="text-sm">
-                      📝 Total Notes
-                    </div>
-
-                    <div className="text-2xl font-bold">
-                      {notes.length}
-                    </div>
-                  </div>
-
-                  <div
-                    className="
-                      bg-slate-100
-                      dark:bg-slate-700
-                      p-4
-                      rounded-xl
-                    "
-                  >
-                    <div className="text-sm">
-                      📌 Pinned Notes
-                    </div>
-
-                    <div className="text-2xl font-bold">
-                      {
-                        notes.filter(
-                          (n) => n.isPinned
-                        ).length
-                      }
-                    </div>
-                  </div>
-
-                  <div
-                    className="
-                      bg-slate-100
-                      dark:bg-slate-700
-                      p-4
-                      rounded-xl
-                    "
-                  >
-                    <div className="text-sm">
-                      👥 Members
-                    </div>
-
-                    <div className="text-2xl font-bold">
-                      {members.length}
-                    </div>
-                  </div>
-
-                  <div
-                    className="
-                      bg-slate-100
-                      dark:bg-slate-700
-                      p-4
-                      rounded-xl
-                    "
-                  >
-                    <div className="text-sm">
-                      📦 Archived Notes
-                    </div>
-
-                    <div className="text-2xl font-bold">
-                      {trashNotes.length}
-                    </div>
-                  </div>
-
-                </div>
-              </div>
+              <StatisticsSection
+                notes={notes}
+                members={members}
+                trashNotes={trashNotes}
+              />
 
               <SearchBar
                 search={search}
@@ -3042,314 +1427,36 @@ const isOwner =
               {
                 showTrash && (
 
-                  <div
-                    className="
-                      bg-white
-                      dark:bg-slate-800
-                      rounded-2xl
-                      shadow-md
-                      p-6
-                      mb-6
-                    "
-                  >
-
-                    <h2
-                      className="
-                        text-2xl
-                        font-bold
-                        mb-4
-                        dark:text-white
-                      "
-                    >
-                      Trash
-                    </h2>
-
-                    {
-                      trashNotes.length === 0 ? (
-
-                        <div
-                          className="
-                            text-gray-500
-                            dark:text-gray-400
-                          "
-                        >
-                          Trash is empty
-                        </div>
-
-                      ) : (
-
-                        trashNotes.map(
-                          (note) => (
-
-                            <div
-                              key={note._id}
-                              className="
-                                border-b
-                                py-4
-                                flex
-                                justify-between
-                                items-center
-                              "
-                            >
-
-                              <div
-                                className="
-                                  dark:text-white
-                                "
-                              >
-                                {note.title}
-                              </div>
-
-                              <div className="flex gap-2">
-
-                                <button
-                                  onClick={async () => {
-
-                                    const data =
-                                      await restoreNote(
-                                        note._id
-                                      );
-
-                                    fetchTrashNotes();
-                                    fetchNotes();
-
-                                    toast.success(
-                                      data.message
-                                    );
-                                  }}
-                                  className="
-                                    bg-green-600
-                                    text-white
-                                    px-3
-                                    py-1
-                                    rounded
-                                  "
-                                >
-                                  Restore
-                                </button>
-
-                                <button
-                                  onClick={() => {
-
-                                    setConfirmConfig({
-
-                                      title:
-                                        "Delete Forever",
-
-                                      message:
-                                        `Permanently delete "${note.title}"? This cannot be undone.`,
-
-                                      confirmText:
-                                        "Delete Forever",
-
-                                      confirmColor:
-                                        "bg-red-700",
-
-                                      onConfirm: async () => {
-
-                                        try {
-
-                                          const data =
-                                            await permanentlyDeleteNote(
-                                              note._id
-                                            );
-
-                                          fetchTrashNotes();
-
-                                          toast.success(
-                                            data.message
-                                          );
-
-                                        } catch (error) {
-
-                                          toast.error(
-                                            error.response?.data?.message
-                                            ||
-                                            "Delete failed"
-                                          );
-                                        }
-                                      }
-                                    });
-
-                                    setConfirmOpen(true);
-                                  }}
-                                  className="
-                                    bg-red-600
-                                    text-white
-                                    px-3
-                                    py-1
-                                    rounded
-                                  "
-                                >
-                                  Delete Forever
-                                </button>
-
-                              </div>
-
-                            </div>
-
-                          )
-                        )
-
-                      )
-                    }
-
-                  </div>
+                  <TrashSection
+                    trashNotes={trashNotes}
+                    fetchTrashNotes={fetchTrashNotes}
+                    fetchNotes={fetchNotes}
+                    restoreNote={restoreNote}
+                    permanentlyDeleteNote={permanentlyDeleteNote}
+                    toast={toast}
+                    setConfirmConfig={setConfirmConfig}
+                    setConfirmOpen={setConfirmOpen}
+                  />
 
                 )
               }
 
-              {
-                notesLoading ? (
+              <NotesSection
+                notesLoading={notesLoading}
 
-                  <div
-                    className="
-                      text-center
-                      py-20
-                      dark:text-white
-                    "
-                  >
-                    Loading Notes...
-                  </div>
+                filteredNotes={filteredNotes}
 
-                ) : filteredNotes.length === 0 ? (
+                pinnedNotes={pinnedNotes}
+                normalNotes={normalNotes}
 
-                  <div
-                    className="
-                      bg-white
-                      dark:bg-slate-800
-                      rounded-3xl
-                      shadow-lg
-                      border
-                      border-slate-200
-                      dark:border-slate-700
-                      p-16
-                      text-center
-                      animate-fadeIn
-                    "
-                  >
+                setSelectedNote={setSelectedNote}
 
-                    <div className="text-6xl mb-6">
-                      📝
-                    </div>
+                togglePin={togglePin}
+                editHandler={editHandler}
+                deleteNote={deleteNote}
 
-                    <h2
-                      className="
-                        text-4xl
-                        font-bold
-                        mb-4
-                        dark:text-white
-                      "
-                    >
-                      No Notes Yet
-                    </h2>
-
-                    <p
-                      className="
-                        text-gray-500
-                        dark:text-gray-400
-                        text-lg
-                      "
-                    >
-                      Create your first note and
-                      start organizing your ideas 🚀
-                    </p>
-
-                  </div>
-
-                ) : (
-
-                  <>
-                    {
-                      pinnedNotes.length > 0 && (
-
-                        <>
-                          <h2
-                            className="
-                              text-xl
-                              font-bold
-                              mb-4
-                              dark:text-white
-                            "
-                          >
-                            📌 Pinned Notes
-                          </h2>
-
-                          <div
-                            className="
-                              grid
-                              grid-cols-1
-                              md:grid-cols-2
-                              lg:grid-cols-3
-                              gap-6
-                              mb-8
-                            "
-                          >
-                            {
-                              pinnedNotes.map(
-                                (note) => (
-
-                                  <NoteCard
-                                    key={note._id}
-                                    note={note}
-                                    setSelectedNote={setSelectedNote}
-                                    togglePin={togglePin}
-                                    editHandler={editHandler}
-                                    deleteNote={deleteNote}
-                                    canWrite={canWrite}
-                                  />
-
-                                )
-                              )
-                            }
-                          </div>
-                        </>
-
-                      )
-                    }
-
-                    <h2
-                      className="
-                        text-xl
-                        font-bold
-                        mb-4
-                        dark:text-white
-                      "
-                    >
-                      Notes
-                    </h2>
-
-                    <div
-                      className="
-                        grid
-                        grid-cols-1
-                        md:grid-cols-2
-                        lg:grid-cols-3
-                        gap-6
-                      "
-                    >
-                      {
-                        normalNotes.map(
-                          (note) => (
-
-                            <NoteCard
-                              key={note._id}
-                              note={note}
-                              setSelectedNote={setSelectedNote}
-                              togglePin={togglePin}
-                              editHandler={editHandler}
-                              deleteNote={deleteNote}
-                              canWrite={canWrite}
-                            />
-
-                          )
-                        )
-                      }
-                    </div>
-                  </>
-
-                )
-              }
+                canWrite={canWrite}
+              />
 
             </>
 

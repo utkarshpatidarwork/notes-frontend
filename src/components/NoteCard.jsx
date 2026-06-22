@@ -1,6 +1,4 @@
 //NoteCard.jsx
-import ReactMarkdown from "react-markdown";
-
 function NoteCard({
   note,
   setSelectedNote,
