@@ -82,3 +82,31 @@ export const permanentlyDeleteNote =
 
     return data;
   };
+
+  export const getNoteVersions =
+  async (id) => {
+
+    const { data } =
+      await api.get(
+        `/api/notes/versions/${id}`
+      );
+
+    return data;
+  };
+
+export const restoreNoteVersion =
+  async (
+    id,
+    versionIndex
+  ) => {
+
+    const { data } =
+      await api.put(
+        `/api/notes/restore-version/${id}`,
+        {
+          versionIndex
+        }
+      );
+
+    return data;
+  };

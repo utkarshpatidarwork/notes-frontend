@@ -6,7 +6,8 @@ function NoteModal({
   setSelectedNote,
   canWrite,
   editHandler,
-  deleteNote
+  deleteNote,
+  openVersionHistory
 }) {
 
   if (!selectedNote) return null;
@@ -151,6 +152,23 @@ function NoteModal({
                       "
                     >
                       Edit
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        openVersionHistory(
+                          selectedNote
+                        )
+                      }
+                      className="
+                        bg-purple-600
+                        text-white
+                        px-4
+                        py-2
+                        rounded-lg
+                      "
+                    >
+                      History
                     </button>
 
                     <button

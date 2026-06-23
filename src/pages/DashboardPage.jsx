@@ -33,12 +33,20 @@ import {
 
 import { getActivities } from "../services/activityService";
 
+import {
+  getNoteVersions,
+  restoreNoteVersion
+} from "../services/noteService";
+
 import ConfirmModal
   from "../components/ConfirmModal";
 
 import toast from "react-hot-toast";
-
+/*
 import { io } from "socket.io-client";
+*/
+
+import socket from "../socket";
 
 import {
   useNavigate
@@ -204,6 +212,31 @@ function DashboardPage() {
   const [confirmConfig, setConfirmConfig] =
     useState({});
 
+  const [
+    versionHistoryOpen,
+    setVersionHistoryOpen
+  ] = useState(false);
+
+  const [
+    selectedVersionNote,
+    setSelectedVersionNote
+  ] = useState(null);
+
+  const [
+    versions,
+    setVersions
+  ] = useState([]);
+
+  const [
+    restoreIndex,
+    setRestoreIndex
+  ] = useState(null);
+
+  const [
+    showRestoreConfirm,
+    setShowRestoreConfirm
+  ] = useState(false);
+
   const currentUser =
     JSON.parse(
       localStorage.getItem(
@@ -234,14 +267,14 @@ const isOwner =
   currentRole === "owner";
 
   const navigate = useNavigate();
-
+/*
   const API =
     import.meta.env.VITE_API_URL;
 
   const [socket] = useState(
     () => io(API)
   );
-
+*/
   const logoutHandler = () => {
 
     localStorage.removeItem("token");
@@ -403,11 +436,71 @@ const isOwner =
             selectedWorkspace._id
           );
 
-        setActivities(data);
+        setActivities(data.activities);
 
       } catch (error) {
 
         console.log(error);
+      }
+    };
+
+  const openVersionHistory =
+    async (note) => {
+
+      try {
+
+        const data =
+          await getNoteVersions(
+            note._id
+          );
+
+        setVersions(data);
+
+        setSelectedVersionNote(
+          note
+        );
+
+        setVersionHistoryOpen(
+          true
+        );
+
+      } catch (error) {
+
+        toast.error(
+          error.response?.data?.message
+          ||
+          "Failed to load versions"
+        );
+      }
+    };
+
+  const restoreVersion =
+    async (index) => {
+
+      try {
+
+        await restoreNoteVersion(
+          selectedVersionNote._id,
+          index
+        );
+
+        setVersionHistoryOpen(
+          false
+        );
+
+        fetchNotes();
+
+        toast.success(
+          "Version Restored"
+        );
+
+      } catch (error) {
+
+        toast.error(
+          error.response?.data?.message
+          ||
+          "Failed to restore version"
+        );
       }
     };
 
@@ -560,6 +653,14 @@ const isOwner =
       }
     );
 
+    socket.on(
+      "trashUpdated",
+      () => {
+
+        fetchTrashNotes();
+      }
+    );
+
     return () => {
 
       socket.off("notesUpdated");
@@ -574,7 +675,9 @@ const isOwner =
 
       socket.off("workspaceDeleted");
 
-      if (selectedWorkspace) {
+      socket.off("trashUpdated");
+
+      if (selectedWorkspace?._id) {
 
         socket.emit(
           "leaveWorkspace",
@@ -1003,6 +1106,9 @@ const isOwner =
 
         case "OWNERSHIP_TRANSFERRED":
           return `transferred ownership to ${activity.target}`;
+        
+        case "NOTE_VERSION_RESTORED":
+          return `restored version of "${activity.target}"`;
 
         default:
           return activity.action;
@@ -1106,6 +1212,9 @@ const isOwner =
 
         case "WORKSPACE_RENAMED":
           return "⚙️";
+
+        case "NOTE_VERSION_RESTORED":
+          return "⏪";
 
         default:
           return "📌";
@@ -1471,7 +1580,205 @@ const isOwner =
         canWrite={canWrite}
         editHandler={editHandler}
         deleteNote={deleteNote}
+        openVersionHistory={openVersionHistory}
       />
+
+      {
+        versionHistoryOpen && (
+
+          <div
+            className="
+              fixed
+              inset-0
+              bg-black/50
+              flex
+              items-center
+              justify-center
+              z-50
+              p-4
+            "
+          >
+
+            <div
+              className="
+                bg-white
+                dark:bg-slate-900
+                rounded-3xl
+                w-full
+                max-w-3xl
+                p-6
+                max-h-[80vh]
+                overflow-y-auto
+              "
+            >
+
+              <div className="flex justify-between mb-6">
+
+                <h2
+                  className="
+                    text-2xl
+                    font-bold
+                    dark:text-white
+                  "
+                >
+                  Version History
+                </h2>
+
+                <button
+                  onClick={() =>
+                    setVersionHistoryOpen(false)
+                  }
+                  className="
+                    text-2xl
+                    dark:text-white
+                  "
+                >
+                  ✕
+                </button>
+
+              </div>
+
+              {
+                versions.length === 0 ? (
+
+                  <p className="dark:text-white">
+                    No versions found
+                  </p>
+
+                ) : (
+
+                  versions
+                    .slice()
+                    .reverse()
+                    .map(
+                      (
+                        version,
+                        index
+                      ) => (
+
+                        <div
+                          key={index}
+                          className="
+                            border
+                            rounded-xl
+                            p-4
+                            mb-4
+                            dark:border-slate-700
+                          "
+                        >
+
+                          <div
+                            className="
+                              flex
+                              justify-between
+                              items-start
+                              mb-3
+                            "
+                          >
+
+                            <div>
+
+                              <h3
+                                className="
+                                  font-semibold
+                                  dark:text-white
+                                "
+                              >
+                                {version.title}
+                              </h3>
+
+                              <p
+                                className="
+                                  text-sm
+                                  text-gray-500
+                                "
+                              >
+                                {
+                                  version.updatedBy?.name
+                                }
+                                {" • "}
+                                {
+                                  new Date(
+                                    version.updatedAt
+                                  ).toLocaleString()
+                                }
+                              </p>
+
+                            </div>
+
+                            {
+                              canWrite && (
+
+                                <button
+                                  onClick={() => {
+
+                                    setConfirmConfig({
+                                      title:
+                                        "Restore Version",
+
+                                      message:
+                                        "Restore this version? Current content will be saved in version history.",
+
+                                      confirmText:
+                                        "Restore",
+
+                                      confirmColor:
+                                        "bg-green-600",
+
+                                      onConfirm: async () => {
+
+                                        await restoreVersion(
+                                          versions.length
+                                          - 1
+                                          - index
+                                        );
+                                      }
+                                    });
+
+                                    setConfirmOpen(true);
+                                  }}
+                                  className="
+                                    bg-green-600
+                                    hover:bg-green-700
+                                    text-white
+                                    px-4
+                                    py-2
+                                    rounded-lg
+                                  "
+                                >
+                                  Restore
+                                </button>
+
+                              )
+                            }
+
+                          </div>
+
+                          <div
+                            className="
+                              text-sm
+                              text-gray-600
+                              dark:text-gray-300
+                              whitespace-pre-wrap
+                            "
+                          >
+                            {version.content}
+                          </div>
+
+                        </div>
+
+                      )
+                    )
+
+                )
+              }
+
+            </div>
+
+          </div>
+
+        )
+      }
 
       <ConfirmModal
         open={confirmOpen}
