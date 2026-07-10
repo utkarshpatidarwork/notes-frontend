@@ -241,6 +241,7 @@ function MembersSection({
                                     focus:ring-2
                                     focus:ring-blue-500
                                     focus:outline-none
+                                    cursor-pointer
                                 "
                                 >
 
@@ -343,6 +344,8 @@ function MembersSection({
                                         px-4
                                         py-2
                                         rounded-lg
+                                        cursor-pointer
+                                        hover:bg-yellow-600
                                     "
                                     >
                                     {
@@ -423,6 +426,8 @@ function MembersSection({
                                     px-4
                                     py-2
                                     rounded-lg
+                                    cursor-pointer
+                                    hover:bg-red-600
                                 "
                                 >
                                 {

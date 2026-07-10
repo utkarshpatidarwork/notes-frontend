@@ -102,7 +102,7 @@ function StatisticsSection({
           "
         >
           <div className="text-sm">
-            📦 Archived Notes
+            🗑️ Trash Notes
           </div>
 
           <div className="text-2xl font-bold">

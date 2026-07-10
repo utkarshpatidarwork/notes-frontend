@@ -4,18 +4,51 @@ import {
 } from "react-router-dom";
 
 function ProtectedRoute({
-  children
+  children,
+  adminOnly = false
 }) {
 
   const token =
-    localStorage.getItem("token");
+    localStorage.getItem(
+      "token"
+    );
 
-  // No Token
+  let user = null;
+
+    try {
+
+      user = JSON.parse(
+        localStorage.getItem(
+          "user"
+        )
+      );
+
+    } catch {
+
+      localStorage.removeItem(
+        "user"
+      );
+    }
+
   if (!token) {
-    return <Navigate to="/" />;
+
+    return (
+      <Navigate to="/" />
+    );
   }
 
-  // Logged In
+  if (
+    adminOnly &&
+    user?.role !== "admin"
+  ) {
+
+    return (
+      <Navigate
+        to="/dashboard"
+      />
+    );
+  }
+
   return children;
 }
 

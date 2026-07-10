@@ -1,4 +1,6 @@
 //ConfirmModal.jsx
+import { useState } from "react";
+
 function ConfirmModal({
   open,
   title,
@@ -9,6 +11,9 @@ function ConfirmModal({
   onConfirm,
   onCancel
 }) {
+
+  const [loading, setLoading] =
+    useState(false);
 
   if (!open) return null;
 
@@ -70,28 +75,52 @@ function ConfirmModal({
 
           <button
             onClick={onCancel}
+            disabled={loading}
             className="
               px-4
               py-2
               rounded-lg
               border
               dark:text-white
+              disabled:opacity-60
+              disabled:cursor-not-allowed
             "
           >
             {cancelText}
           </button>
 
           <button
-            onClick={onConfirm}
+            onClick={async () => {
+
+              if (loading) return;
+
+              try {
+
+                setLoading(true);
+
+                await onConfirm();
+
+              } finally {
+
+                setLoading(false);
+              }
+            }}
+            disabled={loading}
             className={`
               ${confirmColor}
               text-white
               px-4
               py-2
               rounded-lg
+              disabled:opacity-60
+              disabled:cursor-not-allowed
             `}
           >
-            {confirmText}
+            {
+              loading
+                ? "Processing..."
+                : confirmText
+            }
           </button>
 
         </div>

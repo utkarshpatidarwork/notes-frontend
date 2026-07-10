@@ -36,10 +36,11 @@ function CategoryFilters({
               py-2
               rounded-full
               transition
+              cursor-pointer
               ${
                 selectedCategory === cat
                   ? "bg-blue-600 text-white"
-                  : "bg-white dark:bg-slate-800 dark:text-white"
+                  : "bg-white hover:bg-slate-200 dark:bg-slate-800 dark:text-white hover:dark:bg-slate-700"
               }
             `}
           >

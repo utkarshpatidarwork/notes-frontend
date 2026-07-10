@@ -19,6 +19,9 @@ function LoginPage() {
   const [password, setPassword] =
     useState("");
 
+  const [loading, setLoading] =
+    useState(false);
+
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -26,6 +29,8 @@ function LoginPage() {
     e.preventDefault();
 
     try {
+
+      setLoading(true);
 
       const data = 
         await loginUser(
@@ -45,7 +50,16 @@ function LoginPage() {
 
       toast.success("Login Successful");
 
-      navigate("/dashboard");
+      if (
+        data.role === "admin"
+      ) {
+
+        navigate("/admin");
+
+      } else {
+
+        navigate("/dashboard");
+      }
 
     } catch (error) {
 
@@ -53,6 +67,10 @@ function LoginPage() {
         error.response?.data?.message ||
         "Login Failed"
       );
+
+    } finally {
+
+      setLoading(false);
     }
   };
 
@@ -149,6 +167,7 @@ function LoginPage() {
 
           <button
             type="submit"
+            disabled={loading}
             className="
               w-full
               bg-blue-600
@@ -158,9 +177,15 @@ function LoginPage() {
               py-3
               rounded-lg
               transition
+              disabled:opacity-60
+              disabled:cursor-not-allowed
             "
           >
-            Login
+            {
+              loading
+                ? "Logging in..."
+                : "Login"
+            }
           </button>
 
           <p

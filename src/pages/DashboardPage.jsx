@@ -1,7 +1,8 @@
 //DashboardPage.jsx
 import {
   useEffect,
-  useState
+  useState,
+  useRef
 } from "react";
 
 import {
@@ -182,6 +183,9 @@ function DashboardPage() {
   const [members, setMembers] =
     useState([]);
 
+  const [membersWorkspaceId, setMembersWorkspaceId] =
+    useState(null);
+
   const [membersLoading, setMembersLoading] =
     useState(false);
 
@@ -255,18 +259,40 @@ function DashboardPage() {
       String(reqUserId)
   );
 
-const currentRole =
-  currentMember?.role;
+  const currentRole =
+    currentMember?.role;
 
-const canWrite =
-  currentRole === "owner"
-  ||
-  currentRole === "editor";
+  const canWrite =
+    currentRole === "owner"
+    ||
+    currentRole === "editor";
 
-const isOwner =
-  currentRole === "owner";
+  const isOwner =
+    currentRole === "owner";
 
   const navigate = useNavigate();
+
+  const selectedWorkspaceRef =
+    useRef(selectedWorkspace);
+
+  const membersRef =
+    useRef(members);
+
+  const membersWorkspaceIdRef =
+    useRef(membersWorkspaceId);
+
+  const reqUserIdRef =
+    useRef(reqUserId);
+
+  const workspacesRequestRef = useRef(0);
+
+  const membersRequestRef = useRef(0);
+
+  const notesRequestRef = useRef(0);
+
+  const activitiesRequestRef = useRef(0);
+
+  const trashRequestRef = useRef(0);
 /*
   const API =
     import.meta.env.VITE_API_URL;
@@ -281,11 +307,16 @@ const isOwner =
 
     localStorage.removeItem("user");
 
+    localStorage.removeItem("selectedWorkspace");
+
     navigate("/");
   };
 
   const fetchWorkspaces =
     async () => {
+
+      const requestId =
+        ++workspacesRequestRef.current;
 
       try {
 
@@ -294,16 +325,24 @@ const isOwner =
         const data =
           await getWorkspaces();
 
+        if (
+          requestId
+          !==
+          workspacesRequestRef.current
+        ) {
+          return;
+        }
+
         setWorkspaces(data);
 
         if (data.length > 0) {
 
           const currentWorkspace =
-            selectedWorkspace
+            selectedWorkspaceRef.current
               ? data.find(
                   (workspace) =>
                     workspace._id ===
-                    selectedWorkspace._id
+                    selectedWorkspaceRef.current._id
                 )
               : null;
 
@@ -334,17 +373,23 @@ const isOwner =
 
         } else {
 
-          setSelectedWorkspace(
-            null
-          );
-
+          setSelectedWorkspace(null);
           setNotes([]);
           setMembers([]);
           setActivities([]);
           setTrashNotes([]);
+          setMembersWorkspaceId(null);
         }
 
       } catch (error) {
+
+        if (
+          requestId
+          !==
+          workspacesRequestRef.current
+        ) {
+          return;
+        }
 
         toast.error(
           error.response?.data?.message
@@ -354,18 +399,43 @@ const isOwner =
 
       } finally {
 
-        setWorkspaceLoading(false);
+        if (
+          requestId
+          ===
+          workspacesRequestRef.current
+        ) {
+
+          setWorkspaceLoading(
+            false
+          );
+
+        }
+
       }
     };
 
   const fetchNotes = async () => {
 
-    if (!selectedWorkspace) {
+    if (!selectedWorkspaceRef.current
+      ||
+      !membersRef.current.some(
+        (member) =>
+          String(member.user?._id)
+          ===
+          String(reqUserIdRef.current)
+      )
+    ) {
       
       setNotes([]);
       
       return;
     }
+
+    const workspaceId =
+      selectedWorkspaceRef.current._id;
+
+     const requestId =
+      ++notesRequestRef.current;
 
     try {
 
@@ -373,12 +443,35 @@ const isOwner =
 
       const data =
         await getNotes(
-          selectedWorkspace._id
+          workspaceId
         );
+
+      if (
+        requestId
+        !==
+        notesRequestRef.current
+      ) {
+        return;
+      }
+
+      if (
+        selectedWorkspaceRef.current?._id
+        !==
+        workspaceId
+      ) {
+        return;
+      }
 
       setNotes(data.notes);
 
     } catch (error) {
+
+      if (
+        requestId !==
+        notesRequestRef.current
+      ) {
+        return;
+      }
 
       toast.error(
         error.response?.data?.message
@@ -387,31 +480,79 @@ const isOwner =
       );
 
     } finally {
+      
+        if (
+        requestId ===
+        notesRequestRef.current
+      ) {
 
-      setNotesLoading(false);
+        setNotesLoading(false);
+
+      }
     }
   };
 
   const fetchTrashNotes =
     async () => {
 
-      if (!selectedWorkspace) {
-        
+      const me =
+        membersRef.current.find(
+          (member) =>
+            String(member.user?._id) ===
+            String(reqUserIdRef.current)
+        );
+
+      if (
+        !selectedWorkspaceRef.current ||
+        !me ||
+        me.role === "viewer"
+      ) {
+
         setTrashNotes([]);
-        
+
         return;
       }
+
+      const workspaceId =
+        selectedWorkspaceRef.current._id;
+
+      const requestId =
+        ++trashRequestRef.current;
 
       try {
 
         const data =
           await getArchivedNotes(
-            selectedWorkspace._id
+            workspaceId
           );
+
+        if (
+          requestId
+          !==
+          trashRequestRef.current
+        ) {
+          return;
+        }
+
+        if (
+          selectedWorkspaceRef.current?._id
+          !==
+          workspaceId
+        ) {
+          return;
+        }
 
         setTrashNotes(data);
 
       } catch (error) {
+
+        if (
+          requestId
+          !==
+          trashRequestRef.current
+        ) {
+          return;
+        }
 
         console.log(error);
       }
@@ -421,7 +562,14 @@ const isOwner =
     async () => {
 
       if (
-        !selectedWorkspace?._id
+        !selectedWorkspaceRef.current?._id
+        ||
+        !membersRef.current.some(
+          (member) =>
+            String(member.user?._id)
+            ===
+            String(reqUserIdRef.current)
+        )
       ) {
 
         setActivities([]);
@@ -429,16 +577,55 @@ const isOwner =
         return;
       }
 
+      const workspaceId =
+        selectedWorkspaceRef.current._id;
+
+      const requestId =
+        ++activitiesRequestRef.current;
+
       try {
 
         const data =
           await getActivities(
-            selectedWorkspace._id
+            workspaceId
           );
+
+        if (
+          requestId
+          !==
+          activitiesRequestRef.current
+        ) {
+          return;
+        }
+
+        if (
+          selectedWorkspaceRef.current?._id
+          !==
+          workspaceId
+        ) {
+          return;
+        }
 
         setActivities(data.activities);
 
       } catch (error) {
+
+        if (
+          requestId
+          !==
+          activitiesRequestRef.current
+        ) {
+          return;
+        }
+
+        if (
+          error.response?.status === 403
+        ) {
+
+          setActivities([]);
+
+          return;
+        }
 
         console.log(error);
       }
@@ -488,7 +675,7 @@ const isOwner =
           false
         );
 
-        fetchNotes();
+        await fetchNotes();
 
         toast.success(
           "Version Restored"
@@ -507,12 +694,20 @@ const isOwner =
   const fetchMembers =
     async () => {
 
-      if (!selectedWorkspace) {
+      if (!selectedWorkspaceRef.current) {
         
         setMembers([]);
+
+        setMembersWorkspaceId(null);
         
         return;
       }
+
+      const workspaceId =
+        selectedWorkspaceRef.current._id;
+
+      const requestId =
+        ++membersRequestRef.current;
 
       try {
 
@@ -520,12 +715,47 @@ const isOwner =
 
         const data =
           await getWorkspaceMembers(
-            selectedWorkspace._id
+            workspaceId
           );
+
+        if (
+          requestId !==
+          membersRequestRef.current
+        ) {
+          return;
+        }
+
+        if (
+          selectedWorkspaceRef.current?._id !==
+          workspaceId
+        ) {
+          return;
+        }
 
         setMembers(data);
 
+        setMembersWorkspaceId(
+          workspaceId
+        );
+
       } catch (error) {
+
+        if (
+          requestId !==
+          membersRequestRef.current
+        ) {
+          return;
+        }
+
+        if (
+          error.response?.status === 404
+        ) {
+
+          setMembers([]);
+          setMembersWorkspaceId(null);
+
+          return;
+        }
 
         toast.error(
           error.response?.data?.message
@@ -535,9 +765,44 @@ const isOwner =
 
       } finally {
 
-        setMembersLoading(false);
+        if (
+          requestId ===
+          membersRequestRef.current
+        ) {
+
+          setMembersLoading(false);
+
+        }
       }
     };
+
+  useEffect(() => {
+
+    selectedWorkspaceRef.current =
+      selectedWorkspace;
+
+  }, [selectedWorkspace]);
+
+  useEffect(() => {
+
+    membersRef.current =
+      members;
+
+  }, [members]);
+
+  useEffect(() => {
+
+    membersWorkspaceIdRef.current =
+      membersWorkspaceId;
+
+  }, [membersWorkspaceId]);
+
+  useEffect(() => {
+
+    reqUserIdRef.current =
+      reqUserId;
+
+  }, [reqUserId]);
 
   useEffect(() => {
 
@@ -554,15 +819,30 @@ const isOwner =
         selectedWorkspace._id
       );
 
-      fetchNotes();
+      setMembers([]);
+      setMembersWorkspaceId(null);
+      setNotes([]);
+      setActivities([]);
+      setTrashNotes([]);
+
       fetchMembers();
-      fetchActivities();
-      fetchTrashNotes();
+
     }
+
+    socket.on(
+      "workspacesUpdated",
+      async () => {
+
+        await fetchWorkspaces();
+
+      }
+    );
 
     socket.on(
       "notesUpdated",
       () => {
+
+        if (!selectedWorkspace) return;
 
         fetchNotes();
       }
@@ -572,15 +852,43 @@ const isOwner =
       "membersUpdated",
       async () => {
 
-        await fetchMembers();
+        const workspace =
+          selectedWorkspaceRef.current;
+
+        if (!workspace) {
+          return;
+        }
 
         await fetchWorkspaces();
+
+        if (
+          selectedWorkspaceRef.current?._id !==
+          workspace._id
+        ) {
+          return;
+        }
+
+        await fetchMembers();
       }
     );
 
     socket.on(
       "activityUpdated",
       () => {
+
+        const workspace =
+          selectedWorkspaceRef.current;
+
+        if (!workspace) {
+          return;
+        }
+
+        if (
+          membersWorkspaceIdRef.current !==
+          workspace._id
+        ) {
+          return;
+        }
 
         fetchActivities();
       }
@@ -596,7 +904,7 @@ const isOwner =
         if (
           String(memberId)
           ===
-          String(reqUserId)
+          String(reqUserIdRef.current)
         ) {
 
           socket.emit(
@@ -614,8 +922,13 @@ const isOwner =
 
           setNotes([]);
           setMembers([]);
+          setMembersWorkspaceId(null);
           setActivities([]);
           setTrashNotes([]);
+
+          await fetchWorkspaces();
+
+          return;
         }
 
         await fetchWorkspaces();
@@ -635,7 +948,7 @@ const isOwner =
       async (workspaceId) => {
 
         if (
-          selectedWorkspace?._id
+          selectedWorkspaceRef.current?._id
           ===
           workspaceId
         ) {
@@ -657,11 +970,34 @@ const isOwner =
       "trashUpdated",
       () => {
 
+        const workspace =
+          selectedWorkspaceRef.current;
+
+        if (!workspace) {
+          return;
+        }
+
+        const me =
+          membersRef.current.find(
+            (member) =>
+              String(member.user?._id) ===
+              String(reqUserIdRef.current)
+          );
+
+        if (
+          !me ||
+          me.role === "viewer"
+        ) {
+          return;
+        }
+
         fetchTrashNotes();
       }
     );
 
     return () => {
+
+      socket.off("workspacesUpdated");
 
       socket.off("notesUpdated");
 
@@ -687,6 +1023,55 @@ const isOwner =
     };
 
   }, [selectedWorkspace]);
+
+  useEffect(() => {
+
+    if (
+      !selectedWorkspace ||
+      membersWorkspaceId !==
+        selectedWorkspace._id ||
+      members.length === 0
+    ) {
+      return;
+    }
+
+    const me =
+      members.find(
+        (member) =>
+          String(member.user?._id) ===
+          String(reqUserId)
+      );
+
+    if (!me) {
+
+      setNotes([]);
+      setActivities([]);
+      setTrashNotes([]);
+
+      return;
+    }
+
+    fetchNotes();
+    fetchActivities();
+
+    const canViewTrash =
+      me.role === "owner" ||
+      me.role === "editor";
+
+    if (canViewTrash) {
+
+      fetchTrashNotes();
+
+    } else {
+
+      setTrashNotes([]);
+    }
+
+  }, [
+    selectedWorkspace,
+    members,
+    membersWorkspaceId
+  ]);
 
   useEffect(() => {
 
@@ -851,7 +1236,7 @@ const isOwner =
         attachments,
         category,
         workspace:
-          selectedWorkspace?._id
+          selectedWorkspaceRef.current?._id
       });
 
       clearNoteForm();
@@ -897,7 +1282,7 @@ const isOwner =
           attachments,
           category,
           workspace:
-            selectedWorkspace?._id
+            selectedWorkspaceRef.current?._id
         }
       );
 
@@ -1222,23 +1607,31 @@ const isOwner =
     };
 
   const filteredMembers =
-    members.filter((member) =>
+    members.filter((member) => {
 
-      member.user.name
-        .toLowerCase()
-        .includes(
-          memberSearch.toLowerCase()
-        )
+        if (!member.user) {
+          return false;
+        }
 
-      ||
+        return (
 
-      member.user.email
-        .toLowerCase()
-        .includes(
-          memberSearch.toLowerCase()
-        )
+        member.user.name
+          .toLowerCase()
+          .includes(
+            memberSearch.toLowerCase()
+          )
 
-    );
+        ||
+
+        member.user.email
+          .toLowerCase()
+          .includes(
+            memberSearch.toLowerCase()
+          )
+
+        );
+
+      });
 
   return (
 
@@ -1520,6 +1913,8 @@ const isOwner =
                       py-2
                       rounded-lg
                       mb-4
+                      cursor-pointer
+                      hover:bg-slate-600
                     "
                   >
                     {

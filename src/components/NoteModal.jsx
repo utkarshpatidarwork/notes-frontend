@@ -1,4 +1,6 @@
 //NoteModal.jsx
+import toast from "react-hot-toast";
+
 import ReactMarkdown from "react-markdown";
 
 function NoteModal({
@@ -285,37 +287,51 @@ function NoteModal({
                           <button
                             onClick={async () => {
 
-                              const response =
-                                await fetch(
-                                  file.url
-                                );
+                              try {
 
-                              const blob =
-                                await response.blob();
+                                const response =
+                                  await fetch(
+                                    file.url
+                                  );
 
-                              const url =
+                                if (!response.ok) {
+
+                                  throw new Error();
+                                }
+
+                                const blob =
+                                  await response.blob();
+
+                                const url =
+                                  window.URL
+                                    .createObjectURL(
+                                      blob
+                                    );
+
+                                const link =
+                                  document
+                                    .createElement(
+                                      "a"
+                                    );
+
+                                link.href = url;
+
+                                link.download =
+                                  file.name;
+
+                                link.click();
+
                                 window.URL
-                                  .createObjectURL(
-                                    blob
+                                  .revokeObjectURL(
+                                    url
                                   );
 
-                              const link =
-                                document
-                                  .createElement(
-                                    "a"
-                                  );
+                              } catch {
 
-                              link.href = url;
-
-                              link.download =
-                                file.name;
-
-                              link.click();
-
-                              window.URL
-                                .revokeObjectURL(
-                                  url
+                                toast.error(
+                                  "Download failed"
                                 );
+                              }
                             }}
                             className="
                               bg-blue-600

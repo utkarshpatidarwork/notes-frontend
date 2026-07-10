@@ -14,11 +14,11 @@ import RegisterPage from "./pages/RegisterPage";
 
 import SettingsPage from "./pages/SettingsPage";
 
-import ForgotPasswordPage
-  from "./pages/ForgotPasswordPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
-import ResetPasswordPage
-  from "./pages/ResetPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
 
@@ -52,6 +52,19 @@ function App() {
       />
 
       {/* Protected Dashboard */}
+
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute
+            adminOnly
+          >
+
+            <AdminDashboard />
+
+          </ProtectedRoute>
+        }
+      />
 
       <Route
         path="/dashboard"

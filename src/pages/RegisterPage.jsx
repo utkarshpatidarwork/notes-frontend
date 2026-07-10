@@ -24,6 +24,9 @@ function RegisterPage() {
   const [password, setPassword] =
     useState("");
 
+  const [loading, setLoading] =
+    useState(false);
+
   const navigate =
     useNavigate();
 
@@ -33,6 +36,8 @@ function RegisterPage() {
       e.preventDefault();
 
       try {
+
+        setLoading(true);
 
         const data =
           await registerUser(
@@ -44,6 +49,11 @@ function RegisterPage() {
         localStorage.setItem(
           "token",
           data.token
+        );
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify(data)
         );
 
         toast.success(
@@ -59,6 +69,10 @@ function RegisterPage() {
           ||
           "Registration Failed"
         );
+
+      } finally {
+
+        setLoading(false);
       }
     };
 
@@ -155,6 +169,7 @@ function RegisterPage() {
 
         <button
           type="submit"
+          disabled={loading}
           className="
             bg-blue-600
             hover:bg-blue-700
@@ -162,9 +177,15 @@ function RegisterPage() {
             py-3
             rounded-lg
             font-semibold
+            disabled:opacity-60
+            disabled:cursor-not-allowed
           "
         >
-          Register
+          {
+            loading
+              ? "Registering..."
+              : "Register"
+          }
         </button>
 
         <p

@@ -125,6 +125,7 @@ function NoteForm({
                 dark:bg-slate-700
                 dark:text-white
                 dark:border-slate-600
+                cursor-pointer
             "
             >
 
@@ -316,6 +317,7 @@ function NoteForm({
                 rounded-lg
                 font-semibold
                 disabled:opacity-50
+                cursor-pointer
                 "
             >
                 {
@@ -346,6 +348,11 @@ function NoteForm({
                 border-slate-300
                 dark:border-slate-600
                 dark:text-white
+                cursor-pointer
+                bg-slate-100
+                hover:bg-slate-200
+                dark:bg-slate-700
+                dark:hover:bg-slate-600
                 "
             >
                 Clear

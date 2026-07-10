@@ -46,6 +46,7 @@ function Navbar({
             px-4
             py-2
             rounded-lg
+            cursor-pointer
           "
         >
           {
@@ -65,6 +66,7 @@ function Navbar({
             px-4
             py-2
             rounded-lg
+            cursor-pointer
           "
         >
           Settings
@@ -78,6 +80,7 @@ function Navbar({
             px-4
             py-2
             rounded-lg
+            cursor-pointer
           "
         >
           Logout

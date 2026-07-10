@@ -82,6 +82,7 @@ function WorkspaceSettings({
                 justify-center
                 hover:scale-105
                 transition
+                cursor-pointer
               "
             >
               ⚙️
@@ -120,17 +121,24 @@ function WorkspaceSettings({
             </span>
 
             <button
-              onClick={() => {
+              onClick={async () => {
 
-                navigator.clipboard.writeText(
+                try {
+
+                await navigator.clipboard.writeText(
                   selectedWorkspace.inviteCode
                 );
 
                 toast.success(
                   "Invite code copied"
                 );
+
+                } catch {
+
+                  toast.error("Failed to copy");
+                }
               }}
-              className="text-sm"
+              className="text-sm cursor-pointer hover:scale-105"
             >
               📋
             </button>
@@ -350,11 +358,13 @@ function WorkspaceSettings({
                   setConfirmOpen(true);
                 }}
                 className="
-                  bg-red-700
+                  bg-red-600
                   text-white
                   px-4
                   py-2
                   rounded-lg
+                  cursor-pointer
+                  hover:bg-red-700
                 "
               >
                 Delete Workspace
@@ -410,6 +420,7 @@ function WorkspaceSettings({
                   px-4
                   py-2
                   rounded-lg
+                  cursor-pointer
                 "
               >
                 Leave Workspace

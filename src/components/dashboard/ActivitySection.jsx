@@ -64,12 +64,13 @@ function ActivitySection({
                   rounded-full
                   text-sm
                   transition
+                  cursor-pointer
 
                   ${
                     activityFilter ===
                     filter
                       ? "bg-blue-600 text-white"
-                      : "bg-slate-200 dark:bg-slate-700 dark:text-white"
+                      : "bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"
                   }
                 `}
               >

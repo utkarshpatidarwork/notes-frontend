@@ -77,6 +77,15 @@ function WorkspaceSection({
         <button
           onClick={async () => {
 
+            if (!workspaceName.trim()) {
+
+              toast.error(
+                "Workspace name is required"
+              );
+
+              return;
+            }
+
             try {
 
               setCreatingWorkspace(true);
@@ -126,6 +135,7 @@ function WorkspaceSection({
             text-white
             px-6
             rounded-lg
+            cursor-pointer
           "
           disabled={creatingWorkspace}
         >
@@ -160,6 +170,15 @@ function WorkspaceSection({
           onClick={async () => {
 
             try {
+
+              if (!inviteCode.trim()) {
+
+                toast.error(
+                  "Invite code is required"
+                );
+
+                return;
+              }
 
               setJoiningWorkspace(true);
 
@@ -208,6 +227,7 @@ function WorkspaceSection({
             text-white
             px-6
             rounded-lg
+            cursor-pointer
           "
           disabled={joiningWorkspace}
         >
@@ -262,6 +282,7 @@ function WorkspaceSection({
                       p-5
                       transition
                       hover:shadow-lg
+                      dark:hover:shadow-slate-700
 
                       ${
                         selectedWorkspace?._id
