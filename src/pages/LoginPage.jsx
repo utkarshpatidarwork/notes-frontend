@@ -107,7 +107,7 @@ function LoginPage() {
             mb-2
           "
         >
-          Notes App
+          WorkNest
         </h1>
 
         <p
@@ -179,6 +179,7 @@ function LoginPage() {
               transition
               disabled:opacity-60
               disabled:cursor-not-allowed
+              cursor-pointer
             "
           >
             {

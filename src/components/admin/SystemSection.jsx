@@ -1,5 +1,5 @@
-//SettingsSection.jsx
-function SettingsSection({
+//SystemSection.jsx
+function SystemSection({
 
     dashboard
 
@@ -24,7 +24,7 @@ function SettingsSection({
                     dark:text-white
                 "
             >
-                Settings
+                System
             </h2>
 
             <div
@@ -92,7 +92,7 @@ function SettingsSection({
                                     dark:text-white
                                 "
                             >
-                                Notes App
+                                WorkNest
                             </span>
 
                         </div>
@@ -597,4 +597,4 @@ function SettingsSection({
 }
 
 export default
-    SettingsSection;
+    SystemSection;

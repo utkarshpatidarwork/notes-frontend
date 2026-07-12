@@ -107,14 +107,25 @@ function RegisterPage() {
 
         <h1
           className="
-            text-3xl
+            text-4xl
             font-bold
             text-center
             dark:text-white
           "
         >
-          Register
+          WorkNest
         </h1>
+
+        <p
+          className="
+            text-center
+            text-gray-500
+            dark:text-gray-400
+            mb-2
+          "
+        >
+          Create your account
+        </p>
 
         <input
           type="text"
@@ -179,6 +190,7 @@ function RegisterPage() {
             font-semibold
             disabled:opacity-60
             disabled:cursor-not-allowed
+            cursor-pointer
           "
         >
           {

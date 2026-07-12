@@ -1644,6 +1644,7 @@ function DashboardPage() {
     >
 
       <Navbar
+        user={currentUser}
         darkMode={darkMode}
         setDarkMode={setDarkMode}
         logoutHandler={logoutHandler}

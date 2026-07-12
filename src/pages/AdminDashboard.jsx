@@ -38,8 +38,8 @@ import ActivitiesSection
 import AnalyticsSection
     from "../components/admin/AnalyticsSection";
 
-import SettingsSection
-    from "../components/admin/SettingsSection";
+import SystemSection
+    from "../components/admin/SystemSection";
 
 import ConfirmModal 
     from "../components/ConfirmModal";
@@ -521,9 +521,9 @@ function AdminDashboard() {
         },
 
         {
-            key: "settings",
+            key: "system",
             icon: "⚙️",
-            label: "Settings"
+            label: "System"
         }
 
     ];
@@ -911,6 +911,12 @@ function AdminDashboard() {
                                 : "Switch to dark mode"
                         }
 
+                        title={
+                            darkMode
+                                ? "Light mode"
+                                : "Dark mode"
+                        }
+
                         onClick={() =>
                             setDarkMode(
                                 !darkMode
@@ -918,14 +924,14 @@ function AdminDashboard() {
                         }
 
                         className="
-                            border
-                            border-slate-300
-                            dark:border-slate-600
-                            rounded-lg
-                            px-4
-                            py-2
-                            hover:bg-slate-100
-                            dark:hover:bg-slate-700
+                            w-10
+                            h-10
+                            rounded-full
+                            bg-slate-700
+                            hover:bg-slate-600
+                            flex
+                            items-center
+                            justify-center
                             transition
                             cursor-pointer
                         "
@@ -937,6 +943,28 @@ function AdminDashboard() {
                                 : "🌙"
                         }
 
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            navigate("/settings")
+                        }
+                        aria-label="Settings"
+                        title="Settings"
+                        className="
+                            w-10
+                            h-10
+                            rounded-full
+                            bg-slate-700
+                            hover:bg-slate-600
+                            flex
+                            items-center
+                            justify-center
+                            transition
+                            cursor-pointer
+                        "
+                    >
+                        ⚙️
                     </button>
 
                     <button
@@ -1811,10 +1839,10 @@ function AdminDashboard() {
                                 }
 
                                 {
-                                    activeSection === "settings"
+                                    activeSection === "system"
                                     && (
 
-                                        <SettingsSection
+                                        <SystemSection
 
                                             dashboard={
                                                 dashboard

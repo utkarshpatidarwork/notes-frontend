@@ -13,6 +13,9 @@ import {
     deleteAccount
 } from "../services/authService";
 
+import ConfirmModal
+  from "../components/ConfirmModal";
+
 import toast from "react-hot-toast";
 
 function SettingsPage() {
@@ -51,6 +54,16 @@ const [
   deleteText,
   setDeleteText
 ] = useState("");
+
+const [
+  confirmOpen,
+  setConfirmOpen
+] = useState(false);
+
+const [
+  confirmConfig,
+  setConfirmConfig
+] = useState({});
 
 const updateProfileHandler =
 async () => {
@@ -163,384 +176,424 @@ const deleteAccountHandler =
     }
   };
 
-return (
-
-<div
-  className="
-    min-h-screen
-    bg-slate-100
-    dark:bg-slate-900
-    p-6
-  "
->
-
-  <div
-    className="
-      max-w-4xl
-      mx-auto
-    "
-  >
+  return (
 
     <div
       className="
-        flex
-        items-center
-        gap-4
-        mb-8
-      "
-    >
-
-      <button
-        onClick={() =>
-          navigate("/dashboard")
-        }
-        className="
-          bg-slate-700
-          hover:bg-slate-800
-          text-white
-          px-4
-          py-2
-          rounded-lg
-        "
-      >
-        ← Dashboard
-      </button>
-
-      <div>
-
-        <h1
-          className="
-            text-4xl
-            font-bold
-            dark:text-white
-          "
-        >
-          Settings
-        </h1>
-
-        <p
-          className="
-            text-gray-500
-            dark:text-gray-400
-            mt-2
-          "
-        >
-          Manage your account and security
-        </p>
-
-      </div>
-
-    </div>
-
-    <div
-      className="
-        bg-white
-        dark:bg-slate-800
-        rounded-2xl
-        shadow-md
+        min-h-screen
+        bg-slate-100
+        dark:bg-slate-900
         p-6
-        mb-6
       "
     >
 
-      <h2
+      <div
         className="
-          text-2xl
-          font-semibold
-          mb-6
-          dark:text-white
+          max-w-4xl
+          mx-auto
         "
       >
-        👤 Profile
-      </h2>
 
-      <div className="space-y-4">
-
-        <div>
-
-          <label
-            className="
-              block
-              font-medium
-              mb-2
-              dark:text-white
-            "
-          >
-            Name
-          </label>
-
-          <input
-            type="text"
-            value={profileName}
-            onChange={(e) =>
-              setProfileName(
-                e.target.value
-              )
-            }
-            className="
-              w-full
-              border
-              rounded-lg
-              px-4
-              py-3
-              dark:bg-slate-700
-              dark:text-white
-            "
-          />
-
-        </div>
-
-        <div>
-
-          <label
-            className="
-              block
-              font-medium
-              mb-2
-              dark:text-white
-            "
-          >
-            Email
-          </label>
-
-          <input
-            type="email"
-            value={profileEmail}
-            onChange={(e) =>
-              setProfileEmail(
-                e.target.value
-              )
-            }
-            className="
-              w-full
-              border
-              rounded-lg
-              px-4
-              py-3
-              dark:bg-slate-700
-              dark:text-white
-            "
-          />
-
-        </div>
-
-        <button
-          onClick={
-            updateProfileHandler
-          }
+        <div
           className="
-            bg-blue-600
-            hover:bg-blue-700
-            text-white
-            px-6
-            py-3
-            rounded-lg
-            font-semibold
+            flex
+            items-center
+            gap-4
+            mb-8
           "
         >
-          Update Profile
-        </button>
 
-      </div>
-
-    </div>
-
-    <div
-      className="
-        bg-white
-        dark:bg-slate-800
-        rounded-2xl
-        shadow-md
-        p-6
-        mb-6
-      "
-    >
-
-      <h2
-        className="
-          text-2xl
-          font-semibold
-          mb-6
-          dark:text-white
-        "
-      >
-        🔒 Security
-      </h2>
-
-      <div className="space-y-4">
-
-        <div>
-
-          <label
-            className="
-              block
-              font-medium
-              mb-2
-              dark:text-white
-            "
-          >
-            Current Password
-          </label>
-
-          <input
-            type="password"
-            value={currentPassword}
-            onChange={(e) =>
-              setCurrentPassword(
-                e.target.value
-              )
+          <button
+            onClick={() =>
+              navigate(-1)
             }
             className="
-              w-full
-              border
-              rounded-lg
+              bg-slate-700
+              hover:bg-slate-600
+              text-white
               px-4
-              py-3
-              dark:bg-slate-700
-              dark:text-white
+              py-2
+              rounded-lg
+              cursor-pointer
+              transition
             "
-          />
+          >
+            ← Back
+          </button>
+
+          <div>
+
+            <h1
+              className="
+                text-4xl
+                font-bold
+                dark:text-white
+              "
+            >
+              Settings
+            </h1>
+
+            <p
+              className="
+                text-gray-500
+                dark:text-gray-400
+                mt-2
+              "
+            >
+              Manage your account and security
+            </p>
+
+          </div>
 
         </div>
 
-        <div>
-
-          <label
-            className="
-              block
-              font-medium
-              mb-2
-              dark:text-white
-            "
-          >
-            New Password
-          </label>
-
-          <input
-            type="password"
-            value={newPassword}
-            onChange={(e) =>
-              setNewPassword(
-                e.target.value
-              )
-            }
-            className="
-              w-full
-              border
-              rounded-lg
-              px-4
-              py-3
-              dark:bg-slate-700
-              dark:text-white
-            "
-          />
-
-        </div>
-
-        <button
-          onClick={
-            changePasswordHandler
-          }
+        <div
           className="
-            bg-green-600
-            hover:bg-green-700
-            text-white
-            px-6
-            py-3
-            rounded-lg
-            font-semibold
+            bg-white
+            dark:bg-slate-800
+            rounded-2xl
+            shadow-md
+            p-6
+            mb-6
           "
         >
-          Change Password
-        </button>
 
-      </div>
-
-    </div>
-
-    <div
-      className="
-        bg-white
-        dark:bg-slate-800
-        rounded-2xl
-        shadow-md
-        p-6
-        border
-        border-red-300
-        dark:border-red-800
-      "
-    >
-
-      <h2
-        className="
-          text-2xl
-          font-semibold
-          mb-3
-          text-red-600
-        "
-      >
-        ⚠️ Danger Zone
-      </h2>
-
-      <p
-        className="
-          text-gray-500
-          dark:text-gray-400
-          mb-4
-        "
-      >
-        Permanently delete your account.
-      </p>
-
-      <div className="space-y-4">
-
-        <input
-            type="text"
-            placeholder='Type "DELETE"'
-            value={deleteText}
-            onChange={(e) =>
-            setDeleteText(
-                e.target.value
-            )
-            }
+          <h2
             className="
-            w-full
+              text-2xl
+              font-semibold
+              mb-6
+              dark:text-white
+            "
+          >
+            👤 Profile
+          </h2>
+
+          <div className="space-y-4">
+
+            <div>
+
+              <label
+                className="
+                  block
+                  font-medium
+                  mb-2
+                  dark:text-white
+                "
+              >
+                Name
+              </label>
+
+              <input
+                type="text"
+                value={profileName}
+                onChange={(e) =>
+                  setProfileName(
+                    e.target.value
+                  )
+                }
+                className="
+                  w-full
+                  border
+                  rounded-lg
+                  px-4
+                  py-3
+                  dark:bg-slate-700
+                  dark:text-white
+                "
+              />
+
+            </div>
+
+            <div>
+
+              <label
+                className="
+                  block
+                  font-medium
+                  mb-2
+                  dark:text-white
+                "
+              >
+                Email
+              </label>
+
+              <input
+                type="email"
+                value={profileEmail}
+                onChange={(e) =>
+                  setProfileEmail(
+                    e.target.value
+                  )
+                }
+                className="
+                  w-full
+                  border
+                  rounded-lg
+                  px-4
+                  py-3
+                  dark:bg-slate-700
+                  dark:text-white
+                "
+              />
+
+            </div>
+
+            <button
+              onClick={
+                updateProfileHandler
+              }
+              className="
+                bg-blue-600
+                hover:bg-blue-700
+                text-white
+                px-6
+                py-3
+                rounded-lg
+                font-semibold
+                cursor-pointer
+                transition
+              "
+            >
+              Update Profile
+            </button>
+
+          </div>
+
+        </div>
+
+        <div
+          className="
+            bg-white
+            dark:bg-slate-800
+            rounded-2xl
+            shadow-md
+            p-6
+            mb-6
+          "
+        >
+
+          <h2
+            className="
+              text-2xl
+              font-semibold
+              mb-6
+              dark:text-white
+            "
+          >
+            🔒 Security
+          </h2>
+
+          <div className="space-y-4">
+
+            <div>
+
+              <label
+                className="
+                  block
+                  font-medium
+                  mb-2
+                  dark:text-white
+                "
+              >
+                Current Password
+              </label>
+
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) =>
+                  setCurrentPassword(
+                    e.target.value
+                  )
+                }
+                className="
+                  w-full
+                  border
+                  rounded-lg
+                  px-4
+                  py-3
+                  dark:bg-slate-700
+                  dark:text-white
+                "
+              />
+
+            </div>
+
+            <div>
+
+              <label
+                className="
+                  block
+                  font-medium
+                  mb-2
+                  dark:text-white
+                "
+              >
+                New Password
+              </label>
+
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) =>
+                  setNewPassword(
+                    e.target.value
+                  )
+                }
+                className="
+                  w-full
+                  border
+                  rounded-lg
+                  px-4
+                  py-3
+                  dark:bg-slate-700
+                  dark:text-white
+                "
+              />
+
+            </div>
+
+            <button
+              onClick={
+                changePasswordHandler
+              }
+              className="
+                bg-green-600
+                hover:bg-green-700
+                text-white
+                px-6
+                py-3
+                rounded-lg
+                font-semibold
+                cursor-pointer
+                transition
+              "
+            >
+              Change Password
+            </button>
+
+          </div>
+
+        </div>
+
+        <div
+          className="
+            bg-white
+            dark:bg-slate-800
+            rounded-2xl
+            shadow-md
+            p-6
             border
-            rounded-lg
-            px-4
-            py-3
-            dark:bg-slate-700
-            dark:text-white
-            "
-        />
-
-        <button
-            onClick={
-            deleteAccountHandler
-            }
-            className="
-            bg-red-600
-            hover:bg-red-700
-            text-white
-            px-5
-            py-3
-            rounded-lg
-            font-semibold
-            "
+            border-red-300
+            dark:border-red-800
+          "
         >
-            Delete Account
-        </button>
+
+          <h2
+            className="
+              text-2xl
+              font-semibold
+              mb-3
+              text-red-600
+            "
+          >
+            ⚠️ Danger Zone
+          </h2>
+
+          <p
+            className="
+              text-gray-500
+              dark:text-gray-400
+              mb-4
+            "
+          >
+            Permanently delete your account.
+          </p>
+
+          <div className="space-y-4">
+
+            <input
+                type="text"
+                placeholder='Type "DELETE"'
+                value={deleteText}
+                onChange={(e) =>
+                setDeleteText(
+                    e.target.value
+                )
+                }
+                className="
+                w-full
+                border
+                rounded-lg
+                px-4
+                py-3
+                dark:bg-slate-700
+                dark:text-white
+                "
+            />
+
+            <button
+              onClick={() => {
+
+                setConfirmConfig({
+
+                  title:
+                    "Delete Account",
+
+                  message:
+                    "This action cannot be undone. Permanently delete your account?",
+
+                  confirmText:
+                    "Delete",
+
+                  confirmColor:
+                    "bg-red-600",
+
+                  onConfirm:
+                    deleteAccountHandler
+
+                });
+
+                setConfirmOpen(true);
+
+              }}
+                className="
+                  bg-red-600
+                  hover:bg-red-700
+                  text-white
+                  px-5
+                  py-3
+                  rounded-lg
+                  font-semibold
+                  cursor-pointer
+                  transition
+                "
+            >
+                Delete Account
+            </button>
+
+            </div>
 
         </div>
 
+      </div>
+      
+      <ConfirmModal
+        open={confirmOpen}
+        title={confirmConfig.title}
+        message={confirmConfig.message}
+        confirmText={confirmConfig.confirmText}
+        cancelText={confirmConfig.cancelText}
+        confirmColor={confirmConfig.confirmColor}
+        onConfirm={confirmConfig.onConfirm}
+        onCancel={() => setConfirmOpen(false)}
+      />
+      
     </div>
 
-  </div>
-
-</div>
-
-
-);
+  );
+  
 }
 
 export default SettingsPage;
