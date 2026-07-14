@@ -748,6 +748,17 @@ function AdminDashboard() {
 
     useEffect(() => {
 
+        socket.emit(
+            "joinUser",
+            user._id
+        );
+
+        socket.emit("joinAdmin");
+
+    }, []);
+
+    useEffect(() => {
+
         socket.on(
             "usersUpdated",
             () => {

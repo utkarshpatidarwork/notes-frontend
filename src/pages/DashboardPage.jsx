@@ -778,6 +778,19 @@ function DashboardPage() {
 
   useEffect(() => {
 
+    if (currentUser?._id) {
+
+      socket.emit(
+        "joinUser",
+        currentUser._id
+      );
+
+    }
+
+  }, [currentUser]);
+
+  useEffect(() => {
+
     selectedWorkspaceRef.current =
       selectedWorkspace;
 
