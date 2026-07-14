@@ -262,12 +262,27 @@ function DashboardPage() {
   const currentRole =
     currentMember?.role;
 
-  const canWrite =
-    currentRole === "owner"
+  const roleResolved =
+    !selectedWorkspace
     ||
-    currentRole === "editor";
+    (
+      membersWorkspaceId === selectedWorkspace._id
+      &&
+      currentMember
+    );
+
+  const canWrite =
+    roleResolved
+    &&
+    (
+      currentRole === "owner"
+      ||
+      currentRole === "editor"
+    );
 
   const isOwner =
+    roleResolved
+    &&
     currentRole === "owner";
 
   const navigate = useNavigate();
@@ -1792,6 +1807,7 @@ function DashboardPage() {
                   </div>
                   
                   <WorkspaceSettings
+                    roleResolved={roleResolved}
                     isOwner={isOwner}
 
                     editingWorkspace={editingWorkspace}

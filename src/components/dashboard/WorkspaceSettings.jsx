@@ -1,5 +1,6 @@
 //WorkspaceSettings.jsx
 function WorkspaceSettings({
+  roleResolved,
   isOwner,
 
   editingWorkspace,
@@ -29,6 +30,10 @@ function WorkspaceSettings({
 
   toast
 }) {
+
+  if (!roleResolved) {
+    return null;
+  }
 
   return (
 
