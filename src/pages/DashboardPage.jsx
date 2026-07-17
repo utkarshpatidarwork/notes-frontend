@@ -367,9 +367,17 @@ function DashboardPage() {
             ||
             data[0];
 
-          setSelectedWorkspace(
-            updatedWorkspace
-          );
+          const current = selectedWorkspaceRef.current;
+
+          const shouldUpdate =
+            !current ||
+            current._id !== updatedWorkspace._id ||
+            current.name !== updatedWorkspace.name ||
+            current.description !== updatedWorkspace.description;
+
+          if (shouldUpdate) {
+            setSelectedWorkspace(updatedWorkspace);
+          }
 
         } else {
 

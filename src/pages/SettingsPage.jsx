@@ -505,10 +505,21 @@ const deleteAccountHandler =
             className="
               text-gray-500
               dark:text-gray-400
-              mb-4
             "
           >
             Permanently delete your account.
+          </p>
+
+          <p
+            className="
+              text-sm
+              text-red-600
+              dark:text-red-400
+              mt-2
+              mb-4
+            "
+          >
+            This will permanently delete all workspaces you own. Notes you've created in shared workspaces will remain available to other collaborators.
           </p>
 
           <div className="space-y-4">
