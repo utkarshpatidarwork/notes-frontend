@@ -2111,7 +2111,7 @@ function DashboardPage() {
                                 "
                               >
                                 {
-                                  version.updatedBy?.name
+                                  version.updatedBy?.name || "Deleted User"
                                 }
                                 {" • "}
                                 {

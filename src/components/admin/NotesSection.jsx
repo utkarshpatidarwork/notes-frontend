@@ -220,11 +220,7 @@ function NotesSection({
                                             </td>
 
                                             <td className="py-3">
-                                                {
-                                                    note.user?.name
-                                                    ??
-                                                    "-"
-                                                }
+                                                {note.user?.name || "Deleted User"}
                                             </td>
 
                                             <td className="py-3">

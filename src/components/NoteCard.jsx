@@ -92,7 +92,7 @@ function NoteCard({
             mb-3
           "
         >
-          👤 {note.user?.name}
+          👤 {note.user?.name || "Deleted User"}
         </div>
 
         {

@@ -1592,7 +1592,7 @@ function AdminDashboard() {
                                                                                         dark:text-slate-400
                                                                                     "
                                                                                 >
-                                                                                    By {note.user?.name}
+                                                                                    By {note.user?.name || "Deleted User"}
                                                                                 </div>
 
                                                                             </div>
