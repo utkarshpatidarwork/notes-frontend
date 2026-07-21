@@ -11,6 +11,8 @@ import {
   useNavigate
 } from "react-router-dom";
 
+import socket from "../socket";
+
 function LoginPage() {
 
   const [email, setEmail] =
@@ -42,6 +44,12 @@ function LoginPage() {
         "token",
         data.token
       );
+
+      socket.auth = {
+        token: data.token,
+      };
+
+      socket.connect();
 
       localStorage.setItem(
         "user",

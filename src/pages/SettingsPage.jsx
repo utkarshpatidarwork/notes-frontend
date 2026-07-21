@@ -7,6 +7,8 @@ import {
     useNavigate
 } from "react-router-dom";
 
+import socket from "../socket";
+
 import {
     updateProfile,
     changePassword,
@@ -147,6 +149,10 @@ const deleteAccountHandler =
 
       const data =
         await deleteAccount();
+
+      socket.disconnect();
+
+      socket.auth = {};
 
       localStorage.removeItem(
         "token"

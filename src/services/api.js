@@ -1,6 +1,8 @@
 //api.js
 import axios from "axios";
 
+import socket from "../socket";
+
 const API =
   import.meta.env.VITE_API_URL;
 
@@ -48,6 +50,10 @@ api.interceptors.response.use(
       localStorage.getItem("token")
     ) {
 
+      socket.disconnect();
+
+      socket.auth = {};
+
       localStorage.removeItem(
         "token"
       );
@@ -60,7 +66,7 @@ api.interceptors.response.use(
         "selectedWorkspace"
       );
 
-      window.location.href = "/";
+      window.location.replace("/");
     }
 
     return Promise.reject(

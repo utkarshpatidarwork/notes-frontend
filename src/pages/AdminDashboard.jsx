@@ -748,17 +748,6 @@ function AdminDashboard() {
 
     useEffect(() => {
 
-        socket.emit(
-            "joinUser",
-            user._id
-        );
-
-        socket.emit("joinAdmin");
-
-    }, []);
-
-    useEffect(() => {
-
         socket.on(
             "usersUpdated",
             () => {
@@ -784,6 +773,7 @@ function AdminDashboard() {
             () => {
 
                 fetchNotes();
+                fetchWorkspaces();
                 fetchDashboard();
 
             }
@@ -815,6 +805,10 @@ function AdminDashboard() {
 
     const logoutHandler =
         () => {
+
+            socket.disconnect();
+
+            socket.auth = {};
 
             localStorage.removeItem(
                 "token"

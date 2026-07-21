@@ -303,6 +303,10 @@ function DashboardPage() {
 */
   const logoutHandler = () => {
 
+    socket.disconnect();
+
+    socket.auth = {};
+
     localStorage.removeItem("token");
 
     localStorage.removeItem("user");
@@ -786,19 +790,6 @@ function DashboardPage() {
 
   useEffect(() => {
 
-    if (currentUser?._id) {
-
-      socket.emit(
-        "joinUser",
-        currentUser._id
-      );
-
-    }
-
-  }, [currentUser]);
-
-  useEffect(() => {
-
     selectedWorkspaceRef.current =
       selectedWorkspace;
 
@@ -1034,7 +1025,10 @@ function DashboardPage() {
 
       socket.off("trashUpdated");
 
-      if (selectedWorkspace?._id) {
+      if (
+        socket.connected &&
+        selectedWorkspace?._id
+      ) {
 
         socket.emit(
           "leaveWorkspace",

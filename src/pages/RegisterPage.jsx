@@ -13,6 +13,8 @@ import {
   useNavigate
 } from "react-router-dom";
 
+import socket from "../socket";
+
 function RegisterPage() {
 
   const [name, setName] =
@@ -50,6 +52,12 @@ function RegisterPage() {
           "token",
           data.token
         );
+
+        socket.auth = {
+          token: data.token,
+        };
+
+        socket.connect();
 
         localStorage.setItem(
           "user",

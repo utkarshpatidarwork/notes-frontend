@@ -3,6 +3,8 @@ import {
   Navigate
 } from "react-router-dom";
 
+import socket from "../socket";
+
 function ProtectedRoute({
   children,
   adminOnly = false
@@ -12,6 +14,21 @@ function ProtectedRoute({
     localStorage.getItem(
       "token"
     );
+
+  if (!token) {
+
+    return (
+      <Navigate to="/" />
+    );
+  }
+
+  socket.auth = {
+    token,
+  };
+
+  if (!socket.connected) {
+    socket.connect();
+  }
 
   let user = null;
 
@@ -29,13 +46,6 @@ function ProtectedRoute({
         "user"
       );
     }
-
-  if (!token) {
-
-    return (
-      <Navigate to="/" />
-    );
-  }
 
   if (
     adminOnly &&
